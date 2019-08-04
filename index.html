@@ -160,6 +160,13 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="语法简介"><a href="#语法简介" class="headerlink" title="语法简介"></a>语法简介</h1><p>ES6基本语法介绍</p>
+<h2 id="1-let-const"><a href="#1-let-const" class="headerlink" title="1. let const"></a>1. let const</h2><p><code>let</code>和<code>const</code>都是用来声明变量，都是块级作用域，但是，<code>let</code>所声明变量的作用域只能是这个变量所在的代码块，<code>const</code>声明的是一个不可变的常量。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">1</span>;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">let</span> b = <span class="number">2</span>;</span><br><span class="line">  <span class="keyword">var</span> sum = a+b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>b的作用域只在代码块中</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> age = <span class="number">20</span>;</span><br><span class="line">age++; <span class="comment">//报错</span></span><br></pre></td></tr></table></figure>
+
+<p>age是一个只读常量，不可被修改</p>
         
           <a class="article-more-a" href="/2019/08/03/个人技术成长/前端/ES6/语法简介/#more">more >></a>
         

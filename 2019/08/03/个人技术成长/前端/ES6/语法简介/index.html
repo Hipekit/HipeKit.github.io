@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>ES6_语法简介 | 个人博客-XYP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="语法简介ES6基本语法介绍">
+  <meta name="description" content="语法简介ES6基本语法介绍 1. let constlet和const都是用来声明变量，都是块级作用域，但是，let所声明变量的作用域只能是这个变量所在的代码块，const声明的是一个不可变的常量。 12345var a = 1;&amp;#123;  let b = 2;  var sum = a+b;&amp;#125;  b的作用域只在代码块中 12const age = 20;age++; //报错  a">
 <meta name="keywords" content="博客">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ES6_语法简介">
 <meta property="og:url" content="http://yoursite.com/2019/08/03/个人技术成长/前端/ES6/语法简介/index.html">
 <meta property="og:site_name" content="个人博客-XYP">
-<meta property="og:description" content="语法简介ES6基本语法介绍">
+<meta property="og:description" content="语法简介ES6基本语法介绍 1. let constlet和const都是用来声明变量，都是块级作用域，但是，let所声明变量的作用域只能是这个变量所在的代码块，const声明的是一个不可变的常量。 12345var a = 1;&amp;#123;  let b = 2;  var sum = a+b;&amp;#125;  b的作用域只在代码块中 12const age = 20;age++; //报错  a">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-04T08:20:27.306Z">
+<meta property="og:updated_time" content="2019-08-04T09:00:48.603Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ES6_语法简介">
-<meta name="twitter:description" content="语法简介ES6基本语法介绍">
+<meta name="twitter:description" content="语法简介ES6基本语法介绍 1. let constlet和const都是用来声明变量，都是块级作用域，但是，let所声明变量的作用域只能是这个变量所在的代码块，const声明的是一个不可变的常量。 12345var a = 1;&amp;#123;  let b = 2;  var sum = a+b;&amp;#125;  b的作用域只在代码块中 12const age = 20;age++; //报错  a">
   
     <link rel="alternative" href="/atom.xml" title="个人博客-XYP" type="application/atom+xml">
   
@@ -162,7 +162,6 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="语法简介"><a href="#语法简介" class="headerlink" title="语法简介"></a>语法简介</h1><p>ES6基本语法介绍</p>
-<a id="more"></a>
 <h2 id="1-let-const"><a href="#1-let-const" class="headerlink" title="1. let const"></a>1. let const</h2><p><code>let</code>和<code>const</code>都是用来声明变量，都是块级作用域，但是，<code>let</code>所声明变量的作用域只能是这个变量所在的代码块，<code>const</code>声明的是一个不可变的常量。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">1</span>;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">let</span> b = <span class="number">2</span>;</span><br><span class="line">  <span class="keyword">var</span> sum = a+b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -170,6 +169,7 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> age = <span class="number">20</span>;</span><br><span class="line">age++; <span class="comment">//报错</span></span><br></pre></td></tr></table></figure>
 
 <p>age是一个只读常量，不可被修改</p>
+<a id="more"></a>
 <h2 id="2-箭头函数"><a href="#2-箭头函数" class="headerlink" title="2. 箭头函数"></a>2. 箭头函数</h2><p>ES6可以使用（=&gt;）定义函数</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> f = <span class="function"><span class="params">a</span> =&gt;</span> a+<span class="number">1</span>;</span><br><span class="line"><span class="comment">//等同于</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> = funcation(a)&#123;</span><br><span class="line">  <span class="keyword">return</span> a+<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
