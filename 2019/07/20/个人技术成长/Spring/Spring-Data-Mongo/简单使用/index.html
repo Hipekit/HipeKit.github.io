@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>个人博客-XYP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1、导入依赖1234&amp;lt;dependency&amp;gt;    &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;    &amp;lt;artifactId&amp;gt;spring-boot-starter-data-mongodb&amp;lt;/artifactId&amp;gt;&amp;lt;/dependency&amp;gt;  2、实体类实体类映射mongodb中的">
+  <meta name="description" content="title; SpringDataMongo的简单使用1、导入依赖1234&amp;lt;dependency&amp;gt;    &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;    &amp;lt;artifactId&amp;gt;spring-boot-starter-data-mongodb&amp;lt;/artifactId&amp;gt;&amp;lt;/depende">
 <meta name="keywords" content="博客">
 <meta property="og:type" content="article">
 <meta property="og:title" content="个人博客-XYP">
 <meta property="og:url" content="http://yoursite.com/2019/07/20/个人技术成长/Spring/Spring-Data-Mongo/简单使用/index.html">
 <meta property="og:site_name" content="个人博客-XYP">
-<meta property="og:description" content="1、导入依赖1234&amp;lt;dependency&amp;gt;    &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;    &amp;lt;artifactId&amp;gt;spring-boot-starter-data-mongodb&amp;lt;/artifactId&amp;gt;&amp;lt;/dependency&amp;gt;  2、实体类实体类映射mongodb中的">
+<meta property="og:description" content="title; SpringDataMongo的简单使用1、导入依赖1234&amp;lt;dependency&amp;gt;    &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;    &amp;lt;artifactId&amp;gt;spring-boot-starter-data-mongodb&amp;lt;/artifactId&amp;gt;&amp;lt;/depende">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-07-20T08:11:58.000Z">
+<meta property="og:updated_time" content="2019-08-04T08:58:49.461Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="个人博客-XYP">
-<meta name="twitter:description" content="1、导入依赖1234&amp;lt;dependency&amp;gt;    &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;    &amp;lt;artifactId&amp;gt;spring-boot-starter-data-mongodb&amp;lt;/artifactId&amp;gt;&amp;lt;/dependency&amp;gt;  2、实体类实体类映射mongodb中的">
+<meta name="twitter:description" content="title; SpringDataMongo的简单使用1、导入依赖1234&amp;lt;dependency&amp;gt;    &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;    &amp;lt;artifactId&amp;gt;spring-boot-starter-data-mongodb&amp;lt;/artifactId&amp;gt;&amp;lt;/depende">
   
     <link rel="alternative" href="/atom.xml" title="个人博客-XYP" type="application/atom+xml">
   
@@ -146,8 +146,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="1、导入依赖"><a href="#1、导入依赖" class="headerlink" title="1、导入依赖"></a>1、导入依赖</h1><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-mongodb<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+        <hr>
+<h2 id="title-SpringDataMongo的简单使用"><a href="#title-SpringDataMongo的简单使用" class="headerlink" title="title; SpringDataMongo的简单使用"></a>title; SpringDataMongo的简单使用</h2><h1 id="1、导入依赖"><a href="#1、导入依赖" class="headerlink" title="1、导入依赖"></a>1、导入依赖</h1><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-mongodb<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
+<a id="more"></a>
 <h1 id="2、实体类"><a href="#2、实体类" class="headerlink" title="2、实体类"></a>2、实体类</h1><p>实体类映射mongodb中的一个集合</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">News</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line">    <span class="keyword">private</span> String title;</span><br><span class="line">    <span class="keyword">private</span> String content;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -270,14 +272,14 @@
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          (no title)
+          Elasticsearch-基本概念
         
       </div>
     </a>
   
   
     <a href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/2.Builder、Action和Listener/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title"></div>
+      <div class="article-nav-title">SpringStateMachine—Builder、Action和Listener的使用</div>
       <i class="icon-circle-right"></i>
     </a>
   

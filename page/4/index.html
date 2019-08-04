@@ -139,497 +139,23 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-个人技术成长/MongoDB/概念解析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="1、术语说明"><a href="#1、术语说明" class="headerlink" title="1、术语说明"></a>1、术语说明</h1><table>
-<thead>
-<tr>
-<th>MongoDB术语概念</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>数据库</td>
-<td>数据库</td>
-</tr>
-<tr>
-<td>集合</td>
-<td>数据库表</td>
-</tr>
-<tr>
-<td>文档</td>
-<td>行</td>
-</tr>
-<tr>
-<td>字段</td>
-<td>列</td>
-</tr>
-<tr>
-<td>表联合</td>
-<td>嵌入文档</td>
-</tr>
-<tr>
-<td>主键</td>
-<td>主键</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h2><p>MongoDB默认数据库为“db”</p>
-<p>MongoDB的单个实例可以容纳多个独立的数据库，每一个都有自己的集合和权限，不同的数据库也放置在不同的文件中。</p>
-<p>数据库名的定义：</p>
-<ul>
-<li>不能是空字符串</li>
-<li>不能含有空格，<code>.</code>、<code>$</code>、<code>/</code>、<code>\</code>和<code>\0（空字符）</code></li>
-<li>应全部小写</li>
-<li>最多64字节</li>
-</ul>
-<h2 id="文档"><a href="#文档" class="headerlink" title="文档"></a>文档</h2><p>文档是一组键值对</p>
-<ul>
-<li>文档的键值对是有序的</li>
-<li>文档的键可以是任意数据类型</li>
-<li>MongoDB区分大小写和类型</li>
-<li>键不能重复</li>
-</ul>
-<p>文档键命名规范：</p>
-<ul>
-<li>键不能包含\0空字符。这个字符用来表示键的结尾</li>
-<li><code>.</code>合<code>$</code>有特殊的意义，只有在特定环境下才能使用</li>
-<li>以”_“开头的键是保留的</li>
-</ul>
-<h2 id="集合"><a href="#集合" class="headerlink" title="集合"></a>集合</h2><p>集合是文档组，类似于表，集合没有固定的结构，在关系型数据库中你插入的数据必须符合表的结构，而集合可以是任意数据类型。比如：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">"site"</span>:<span class="string">"www.baidu.com"</span>&#125;</span><br><span class="line">&#123;<span class="string">"site"</span>:<span class="string">"www.google.com"</span>,<span class="string">"name"</span>:<span class="string">"Google"</span>&#125;</span><br><span class="line">&#123;<span class="string">"site"</span>:<span class="string">"www.runoob.com"</span>,<span class="string">"name"</span>:<span class="string">"菜鸟教程"</span>,<span class="string">"num"</span>:<span class="number">5</span>&#125;</span><br></pre></td></tr></table></figure>
-
-<p>符合规范的集合名：</p>
-<ul>
-<li>不能是空字符串</li>
-<li>不能包含\0空字符。这个字符用来表示键的结尾</li>
-<li>不能以”system“开头</li>
-<li>用户创建的集合名字不能含有保留字符</li>
-</ul>
-<h2 id="元数据"><a href="#元数据" class="headerlink" title="元数据"></a>元数据</h2><p>数据库的信息存储在集合中，使用系统的命名空间<code>dbname.system</code></p>
-<table>
-<thead>
-<tr>
-<th align="left">集合命名空间</th>
-<th align="left">描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">dbname.system.namespaces</td>
-<td align="left">列出所有名字空间。</td>
-</tr>
-<tr>
-<td align="left">dbname.system.indexes</td>
-<td align="left">列出所有索引。</td>
-</tr>
-<tr>
-<td align="left">dbname.system.profile</td>
-<td align="left">包含数据库概要(profile)信息。</td>
-</tr>
-<tr>
-<td align="left">dbname.system.users</td>
-<td align="left">列出所有可访问数据库的用户。</td>
-</tr>
-<tr>
-<td align="left">dbname.local.sources</td>
-<td align="left">包含复制对端（slave）的服务器信息和状态。</td>
-</tr>
-</tbody></table>
-<h1 id="2、数据类型"><a href="#2、数据类型" class="headerlink" title="2、数据类型"></a>2、数据类型</h1><table>
-<thead>
-<tr>
-<th align="left">数据类型</th>
-<th align="left">描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">String</td>
-<td align="left">字符串。存储数据常用的数据类型。在 MongoDB 中，UTF-8 编码的字符串才是合法的。</td>
-</tr>
-<tr>
-<td align="left">Integer</td>
-<td align="left">整型数值。用于存储数值。根据你所采用的服务器，可分为 32 位或 64 位。</td>
-</tr>
-<tr>
-<td align="left">Boolean</td>
-<td align="left">布尔值。用于存储布尔值（真/假）。</td>
-</tr>
-<tr>
-<td align="left">Double</td>
-<td align="left">双精度浮点值。用于存储浮点值。</td>
-</tr>
-<tr>
-<td align="left">Min/Max keys</td>
-<td align="left">将一个值与 BSON（二进制的 JSON）元素的最低值和最高值相对比。</td>
-</tr>
-<tr>
-<td align="left">Array</td>
-<td align="left">用于将数组或列表或多个值存储为一个键。</td>
-</tr>
-<tr>
-<td align="left">Timestamp</td>
-<td align="left">时间戳。记录文档修改或添加的具体时间。</td>
-</tr>
-<tr>
-<td align="left">Object</td>
-<td align="left">用于内嵌文档。</td>
-</tr>
-<tr>
-<td align="left">Null</td>
-<td align="left">用于创建空值。</td>
-</tr>
-<tr>
-<td align="left">Symbol</td>
-<td align="left">符号。该数据类型基本上等同于字符串类型，但不同的是，它一般用于采用特殊符号类型的语言。</td>
-</tr>
-<tr>
-<td align="left">Date</td>
-<td align="left">日期时间。用 UNIX 时间格式来存储当前日期或时间。你可以指定自己的日期时间：创建 Date 对象，传入年月日信息。</td>
-</tr>
-<tr>
-<td align="left">Object ID</td>
-<td align="left">对象 ID。用于创建文档的 ID。</td>
-</tr>
-<tr>
-<td align="left">Binary Data</td>
-<td align="left">二进制数据。用于存储二进制数据。</td>
-</tr>
-<tr>
-<td align="left">Code</td>
-<td align="left">代码类型。用于在文档中存储 JavaScript 代码。</td>
-</tr>
-<tr>
-<td align="left">Regular expression</td>
-<td align="left">正则表达式类型。用于存储正则表达式。</td>
-</tr>
-</tbody></table>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/15/个人技术成长/MongoDB/概念解析/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-个人技术成长/JPA/动态查询" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="1、JpaSpecificationExecutor"><a href="#1、JpaSpecificationExecutor" class="headerlink" title="1、JpaSpecificationExecutor"></a>1、JpaSpecificationExecutor</h1><ul>
-<li><p><code>T findOne(Specification&lt;T&gt; spec)</code>：查询单个对象</p>
-</li>
-<li><p><code>List&lt;T&gt; findAll(Specification&lt;T&gt; spec)</code>：查询列表</p>
-</li>
-<li><p><code>Page&lt;T&gt; findAll(Specification&lt;T&gt; spec, Pageable pageable)</code>：分页查询</p>
-<ul>
-<li>pageable：分页参数</li>
-<li>返回值：分页pageBean</li>
-</ul>
-</li>
-<li><p><code>List&lt;T&gt; findAll(Specification&lt;T&gt; spec, Sort sort)</code>：排序查询</p>
-<ul>
-<li>Sort：排序参数</li>
-</ul>
-</li>
-<li><p><code>long count(Specification&lt;T&gt; spec)</code>：统计查询</p>
-</li>
-</ul>
-<h1 id="2、查询条件Speification"><a href="#2、查询条件Speification" class="headerlink" title="2、查询条件Speification"></a>2、查询条件Speification</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Predicate <span class="title">toPredicate</span><span class="params">(Root&lt;T&gt; root, CriteriaQuery&lt;?&gt; query, CriteriaBuilder cb)</span></span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>root：查询的根对象</li>
-<li>CriteriaQuery：顶层查询对象，自定义查询方式</li>
-<li>CriteriaBuilder：查询的构造器，封装了很多的查询条件</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/15/个人技术成长/JPA/动态查询/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-个人技术成长/JPA/核心接口" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="1、核心概念"><a href="#1、核心概念" class="headerlink" title="1、核心概念"></a>1、核心概念</h1><h2 id="1-1-CrudRepository"><a href="#1-1-CrudRepository" class="headerlink" title="1.1 CrudRepository"></a>1.1 CrudRepository</h2><p>Repository是核心接口，CrudRepository提供丰富的CRUD功能区管理实体类。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">CrudRepository</span>&lt;<span class="title">T</span>, <span class="title">ID</span> <span class="keyword">extends</span> <span class="title">Serializable</span>&gt;</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class"> <span class="keyword">extends</span> <span class="title">Repository</span>&lt;<span class="title">T</span>, <span class="title">ID</span>&gt; </span>&#123;        </span><br><span class="line"></span><br><span class="line"> &lt;S extends T&gt; <span class="function">S <span class="title">save</span><span class="params">(S entity)</span></span>;    (<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"> <span class="function">T <span class="title">findOne</span><span class="params">(ID primaryKey)</span></span>;          (<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"> <span class="function">Iterable&lt;T&gt; <span class="title">findAll</span><span class="params">()</span></span>;             (<span class="number">3</span>)</span><br><span class="line"></span><br><span class="line"> <span class="function">Long <span class="title">count</span><span class="params">()</span></span>;                      (<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line"> <span class="function"><span class="keyword">void</span> <span class="title">delete</span><span class="params">(T entity)</span></span>;             (<span class="number">5</span>)</span><br><span class="line"></span><br><span class="line"> <span class="function"><span class="keyword">boolean</span> <span class="title">exists</span><span class="params">(ID primaryKey)</span></span>;     (<span class="number">6</span>)</span><br><span class="line"></span><br><span class="line"> <span class="comment">// … more functionality omitted.</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>（1）保存给定的实体</p>
-<p>（2）获取指定id实体</p>
-<p>（3）查询所有实体</p>
-<p>（4）返回实体的数量</p>
-<p>（5）删除指定的实体</p>
-<p>（6）判断指定id实体是否存在</p>
-<h2 id="1-2-PageingAndSortingRepository"><a href="#1-2-PageingAndSortingRepository" class="headerlink" title="1.2 PageingAndSortingRepository"></a>1.2 PageingAndSortingRepository</h2><p><code>PageingAndSortingRepository</code>提供对对实体的分页访问</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PagingAndSortingRepository</span>&lt;<span class="title">T</span>, <span class="title">ID</span> <span class="keyword">extends</span> <span class="title">Serializable</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="keyword">extends</span> <span class="title">CrudRepository</span>&lt;<span class="title">T</span>, <span class="title">ID</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function">Iterable&lt;T&gt; <span class="title">findAll</span><span class="params">(Sort sort)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="function">Page&lt;T&gt; <span class="title">findAll</span><span class="params">(Pageable pageable)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="2、查询方法"><a href="#2、查询方法" class="headerlink" title="2、查询方法"></a>2、查询方法</h1><ol>
-<li>声明一个接口并继承Repository或其子类，指明实体类和主键类型</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">PersonRepository</span> <span class="keyword">extends</span> <span class="title">Repository</span>&lt;<span class="title">User</span>, <span class="title">Long</span>&gt; </span>&#123; … &#125;</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>在接口里声明查询方法</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">PersonRepository</span> <span class="keyword">extends</span> <span class="title">Repository</span>&lt;<span class="title">Person</span>, <span class="title">Long</span>&gt; </span>&#123;</span><br><span class="line">  <span class="function">List&lt;Person&gt; <span class="title">findByLastname</span><span class="params">(String lastname)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/14/个人技术成长/JPA/核心接口/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-个人技术成长/JPA/常用注解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ul>
-<li><p><code>@Entity</code>：被标识的类是一个实体类，可用指定name，即数据库名</p>
-</li>
-<li><p><code>@Table</code>：当实体类与数据库名不一致时需使用<code>@Table</code>说明</p>
-<ul>
-<li>name ：指定数据库名</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p><code>@Column</code>：将成员属性映射到数据库表的对应字段</p>
-<pre><code>- name：映射的字段名
-    - unqiue：是否唯一
-    - nullable：是否允许为空
-    - length：数据长度
-    - insertable：是否允许插入
-    - updatetable：是否允许更新
-    - columnDefinition：定义建表时创建此列的DDL
-    - secondaryTable：从表名</code></pre></li>
-<li><p><code>@Id</code>：指定表的注解</p>
-</li>
-<li><p><code>@GeneratedValue</code>：为一个实体生成一个唯一标识的主键，标明主键的生成策略，通常与<code>@Id</code>一起使用</p>
-<pre><code>- **IDENTITY**：采用数据库 ID自增长的方式来自增主键字段，Oracle 不支持这种方式；
-- **AUTO**： JPA自动选择合适的策略，是默认选项；
-- **SEQUENCE**：通过序列产生主键，通过 `@SequenceGenerator` 注解指定序列名，MySql 不支持这种方式
-- **TABLE**：通过表产生主键，框架借由表模拟序列产生主键，使用该策略可以使应用更易于数据库移植</code></pre></li>
-<li><p><code>@Transient</code> ：标注此注解后在创建数据表的时候将会忽略该属性</p>
-</li>
-<li><p><code>@Temporal</code> ：向数据库映射日期（Date）属性时用来调整映射的精度</p>
-<ul>
-<li>Temporal.DATE</li>
-<li>Temporal.TIME</li>
-<li>Temporal.TIMESTAMP</li>
-</ul>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/13/个人技术成长/JPA/常用注解/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-个人技术成长/Lombok/常用注解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ul>
-<li>@Getter/@Setter：生成getter/setter方法</li>
-<li>@ToString</li>
-<li>@NoArgsConstructor/@AllArgsConstructor/@RequiredArgsConstructor</li>
-<li>@Data：包含get/set方法，和构造，toString等方法</li>
-<li>@Builder：生成被标注类的一个构造器对象</li>
-<li>@Slf4j/@CommonsLog/@Log4j2</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/13/个人技术成长/Lombok/常用注解/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-个人技术成长/Spring/Spring AOP" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/13/个人技术成长/Spring/Spring AOP/">Spring-AOP</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/13/个人技术成长/Spring/Spring AOP/" class="archive-article-date">
+  	<time datetime="2019-07-13T10:23:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-13</time>
+</a>
+        
+      </header>
     
     <div class="article-entry" itemprop="articleBody">
       
@@ -639,112 +165,10 @@
 <li>后置通知（After）：在目标方法被调用之后执行</li>
 <li>返回通知（After-returning）：在目标方法成功返回之后执行</li>
 <li>异常通知（After-throwing）：在目标方法抛出异常后执行</li>
-<li>环绕通知（Around）：在目标方法前后自定义行为</li>
-</ul>
-<h3 id="连接点"><a href="#连接点" class="headerlink" title="连接点"></a>连接点</h3><p>连接点是应用程序在执行时能插入切面的一个点。这个点可用是调用方法的前后或抛出异常等等。切面代码可用通过这些点插入到程序的正常流程中，并添加新的行为。</p>
-<h3 id="切点"><a href="#切点" class="headerlink" title="切点"></a>切点</h3><p>切点是一个或多个连接点的集合。通常使用明确的类或方法名称，或是利用正则表达式来指定切点。</p>
-<h3 id="切面"><a href="#切面" class="headerlink" title="切面"></a>切面</h3><p>切面是切点和通知的结合。切面通过通知和切点定义了它的内容、在何时、何地完成其功能。</p>
-<h3 id="织入"><a href="#织入" class="headerlink" title="织入"></a>织入</h3><p>把切面应用到目标对象并创建新的代理对象的过程。切面在指定的连接点被织入到目标对象中，织入的时期：</p>
-<ul>
-<li>编译期：切面在目标被编译时被织入</li>
-<li>类加载器：切面在目标被加载到JVM时被织入，这种方式需要类加载器（ClassLoader）</li>
-<li>运行期：切面在应用程序的某个时刻被织入，AOp容器会为目标对象创建一个代理对象，Spring AOP就是这种实现方式。</li>
-</ul>
-<h2 id="1-2-SPring对AOP的支持"><a href="#1-2-SPring对AOP的支持" class="headerlink" title="1.2 SPring对AOP的支持"></a>1.2 SPring对AOP的支持</h2><h3 id="4种类型的AOP支持"><a href="#4种类型的AOP支持" class="headerlink" title="4种类型的AOP支持"></a>4种类型的AOP支持</h3><ul>
-<li>基于代理的Spring AOP</li>
-<li>纯POJO切面</li>
-<li>@AspectJ注解驱动的切面</li>
-<li>注入式AspectJ切面</li>
-</ul>
-<p><strong>注：Spring对AOP的支持局限于方法拦截，即方法级别</strong></p>
-<h3 id="Spring在运行时通知对象"><a href="#Spring在运行时通知对象" class="headerlink" title="Spring在运行时通知对象"></a>Spring在运行时通知对象</h3><p>Spring AOP的实现方式其实是在目标对象外面包裹一层代理类，这个代理类拦截被通知方法的调用，会先调用切面逻辑，然后再执行目标对象的方法。</p>
-<h1 id="2、切点的定义"><a href="#2、切点的定义" class="headerlink" title="2、切点的定义"></a>2、切点的定义</h1><table>
-<thead>
-<tr>
-<th>AspectJ指示器</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>arg()</td>
-<td>限制连接点匹配参数为指定类型的执行方法</td>
-</tr>
-<tr>
-<td>@args()</td>
-<td>限制连接点匹配参数为指定注解标注的的执行方法</td>
-</tr>
-<tr>
-<td>execution()</td>
-<td>匹配连接点的执行方法</td>
-</tr>
-<tr>
-<td>this()</td>
-<td>限制连接点匹配AOP代理的bean引用为指定类型的类</td>
-</tr>
-<tr>
-<td>within()</td>
-<td>限制连接点匹配指定的参数</td>
-</tr>
-<tr>
-<td>@within()</td>
-<td>限制连接点匹配指定注解标注的类型</td>
-</tr>
-</tbody></table>
-<h2 id="2-1-编写切入点"><a href="#2-1-编写切入点" class="headerlink" title="2.1 编写切入点"></a>2.1 编写切入点</h2><p>示例：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">execution(* concert.Performance.perform(..))</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>*：返回任意类型</p>
-</li>
-<li><p><code>concert.Performance：方法所属的类</code></p>
-</li>
-<li><p><code>perform()</code>：方法名</p>
-</li>
-<li><p><code>(..)</code>：参数任意</p>
-</li>
-</ul>
-<h2 id="2-2-在切点中选择bean"><a href="#2-2-在切点中选择bean" class="headerlink" title="2.2 在切点中选择bean"></a>2.2 在切点中选择bean</h2><p>使用bean()通过beanID和bean名称作为参数来限制切点只匹配特定的bean</p>
-<p>示例：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//限定bean为person</span></span><br><span class="line">execution(* concert.Performance.perform() <span class="function">and <span class="title">bean</span><span class="params">(<span class="string">'person'</span>)</span>)</span></span><br><span class="line"><span class="function">    </span></span><br><span class="line"><span class="function"><span class="comment">//限定不为为person的bean</span></span></span><br><span class="line"><span class="function"><span class="title">execution</span><span class="params">(* concert.Performance.perform()</span> and !<span class="title">bean</span><span class="params">(<span class="string">'person'</span>)</span>)</span></span><br></pre></td></tr></table></figure>
-
-<h1 id="3、使用注解创建切面"><a href="#3、使用注解创建切面" class="headerlink" title="3、使用注解创建切面"></a>3、使用注解创建切面</h1><p>在类上通过使用@AspectJ注解来表明这是一个切面类</p>
-<p>相应的通知注解：</p>
-<table>
-<thead>
-<tr>
-<th>注解</th>
-<th>通知</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>@After</td>
-<td>通知方法在目标方法被调用之后执行</td>
-</tr>
-<tr>
-<td>@Before</td>
-<td>通知方法在目标方法被调用之前执行</td>
-</tr>
-<tr>
-<td>@AfterReturning</td>
-<td>通知方法在目标方法返回后执行</td>
-</tr>
-<tr>
-<td>@AfterThrowing</td>
-<td>通知方法在目标方法抛出异常后执行</td>
-</tr>
-<tr>
-<td>@Around</td>
-<td>通知方法将目标方法封装起来</td>
-</tr>
-<tr>
-<td>@PointCut</td>
-<td>定义一个切点</td>
-</tr>
-</tbody></table>
-<p>示例：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//定义一个切点</span></span><br><span class="line"><span class="meta">@PointCut</span>(<span class="string">"execution(** concert.Performance.perform(..))"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">performance</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//定义一个前置通知，@Before表达式指定performance()</span></span><br><span class="line"><span class="meta">@Before</span>(<span class="string">"performance()"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">takeStates</span><span class="params">()</span></span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"Taking States"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
+<li>环绕通知（Around）：在目标方法前后自定义行为
+        
+          <a class="article-more-a" href="/2019/07/13/个人技术成长/Spring/Spring AOP/#more">more >></a>
+        
       
 
       
@@ -757,107 +181,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2019/07/13/个人技术成长/Spring/Spring AOP/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-个人技术成长/万米-从入门到入土/规范" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>1、</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/12/个人技术成长/万米-从入门到入土/规范/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-个人技术成长/Swagger/常用注解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p><code>@ApiModel</code>：标注在类上，</p>
-</blockquote>
-<blockquote>
-<p><code>@ApiModelProperty</code>：标注在属性上</p>
-</blockquote>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/11/个人技术成长/Swagger/常用注解/">展开全文 >></a>
         </p>
       
 
@@ -937,28 +260,27 @@
     <article id="post-个人技术成长/Elasticsearch/1、Elasticsearch简介" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/10/个人技术成长/Elasticsearch/1、Elasticsearch简介/">Elasticsearch-介绍</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/10/个人技术成长/Elasticsearch/1、Elasticsearch简介/" class="archive-article-date">
+  	<time datetime="2019-07-09T16:57:20.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-10</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="1、什么是Elasticsearch"><a href="#1、什么是Elasticsearch" class="headerlink" title="1、什么是Elasticsearch"></a>1、什么是Elasticsearch</h1><p>Elasticsearch 是一个开源的搜索引擎，建立在一个全文搜索引擎库 <a href="https://lucene.apache.org/core/" target="_blank" rel="noopener">Apache Lucene™</a> 基础之上。Elasticsearch 使用Java编写，内部使用Lucene做索引与搜索，通过一套简单的RESTful API使全文检索变得简单。</p>
-<h1 id="2、Elasticsearch的分布式架构"><a href="#2、Elasticsearch的分布式架构" class="headerlink" title="2、Elasticsearch的分布式架构"></a>2、Elasticsearch的分布式架构</h1><p><img src=".%5Cimg%5CElasticsearch%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84.jpg" alt></p>
-<ul>
-<li><p>集群规模可以从单个节点扩展至数百个节点</p>
-</li>
-<li><p>高可用&amp;水平扩展</p>
-<pre><code>-  服务和数据维度</code></pre></li>
-<li><p>支持不同的节点类型</p>
-<pre><code>-  支持Hot&amp;Warm架构</code></pre></li>
-</ul>
-<h1 id="3、Elasticsearch的重要功能"><a href="#3、Elasticsearch的重要功能" class="headerlink" title="3、Elasticsearch的重要功能"></a>3、Elasticsearch的重要功能</h1><ul>
-<li><p>海量数据的分户存储以及集群管理</p>
-<pre><code>- 服务与数据的高可用、水平扩展</code></pre></li>
-<li><p>近实时搜索</p>
-<pre><code>- 结构化/全文/地理位置/自动完成</code></pre></li>
-<li><p>海量数据的近实时分析</p>
-<pre><code>- 聚合功能</code></pre></li>
-</ul>
-<h1 id="4、Elasticsearch生态圈"><a href="#4、Elasticsearch生态圈" class="headerlink" title="4、Elasticsearch生态圈"></a>4、Elasticsearch生态圈</h1><p><img src=".%5Cimg%5CElasticsearch%E7%94%9F%E6%80%81%E5%9C%88.jpg" alt></p>
-
+        
+          <a class="article-more-a" href="/2019/07/10/个人技术成长/Elasticsearch/1、Elasticsearch简介/#more">more >></a>
+        
       
 
       
@@ -1000,9 +322,56 @@
 
 
   
+    <article id="post-个人技术成长/Git命令/Git命令" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/05/个人技术成长/Git命令/Git命令/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span>
     </nav>
   
 

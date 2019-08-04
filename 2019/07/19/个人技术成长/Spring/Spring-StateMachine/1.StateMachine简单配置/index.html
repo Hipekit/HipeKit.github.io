@@ -6,22 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>个人博客-XYP</title>
+  <title>SpringStateMachinede入门 | 个人博客-XYP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1、概念 状态机的要素：现态、事件、动作、次态。  现态：当前所处的状态 事件：状态改变的条件，即触发事件 动作：当触发事件时，执行相应的动作，动作完毕后，迁移到新的状态 次态：事件触发后，迁移的新状态。“次态”是相对于“现态”而言的，“次态”一旦被激活，就成为了“现态”  状态机动作类型：  进入动作：在进入状态进行 退出动作：在退出状态进行 输入动作：依赖于当前状态和输入条件进行 转移动作：在">
+  <meta name="description" content="状态叫的相关概念和SpringStateMachinede的简单使用">
 <meta name="keywords" content="博客">
 <meta property="og:type" content="article">
-<meta property="og:title" content="个人博客-XYP">
+<meta property="og:title" content="SpringStateMachinede入门">
 <meta property="og:url" content="http://yoursite.com/2019/07/19/个人技术成长/Spring/Spring-StateMachine/1.StateMachine简单配置/index.html">
 <meta property="og:site_name" content="个人博客-XYP">
-<meta property="og:description" content="1、概念 状态机的要素：现态、事件、动作、次态。  现态：当前所处的状态 事件：状态改变的条件，即触发事件 动作：当触发事件时，执行相应的动作，动作完毕后，迁移到新的状态 次态：事件触发后，迁移的新状态。“次态”是相对于“现态”而言的，“次态”一旦被激活，就成为了“现态”  状态机动作类型：  进入动作：在进入状态进行 退出动作：在退出状态进行 输入动作：依赖于当前状态和输入条件进行 转移动作：在">
+<meta property="og:description" content="状态叫的相关概念和SpringStateMachinede的简单使用">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2019/07/19/个人技术成长/Spring/Spring-StateMachine/1.StateMachine简单配置/.%5Cimg%5C%E7%8A%B6%E6%80%81%E6%9C%BA%E6%A6%82%E5%BF%B5%E5%9B%BE.png">
 <meta property="og:image" content="http://yoursite.com/2019/07/19/个人技术成长/Spring/Spring-StateMachine/1.StateMachine简单配置/.%5Cimg%5C%E7%8A%B6%E6%80%81%E6%9C%BA%E5%86%85%E9%83%A8%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg">
-<meta property="og:updated_time" content="2019-07-19T05:55:38.000Z">
+<meta property="og:updated_time" content="2019-08-04T08:58:49.478Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="个人博客-XYP">
-<meta name="twitter:description" content="1、概念 状态机的要素：现态、事件、动作、次态。  现态：当前所处的状态 事件：状态改变的条件，即触发事件 动作：当触发事件时，执行相应的动作，动作完毕后，迁移到新的状态 次态：事件触发后，迁移的新状态。“次态”是相对于“现态”而言的，“次态”一旦被激活，就成为了“现态”  状态机动作类型：  进入动作：在进入状态进行 退出动作：在退出状态进行 输入动作：依赖于当前状态和输入条件进行 转移动作：在">
+<meta name="twitter:title" content="SpringStateMachinede入门">
+<meta name="twitter:description" content="状态叫的相关概念和SpringStateMachinede的简单使用">
 <meta name="twitter:image" content="http://yoursite.com/2019/07/19/个人技术成长/Spring/Spring-StateMachine/1.StateMachine简单配置/.%5Cimg%5C%E7%8A%B6%E6%80%81%E6%9C%BA%E6%A6%82%E5%BF%B5%E5%9B%BE.png">
   
     <link rel="alternative" href="/atom.xml" title="个人博客-XYP" type="application/atom+xml">
@@ -147,9 +147,26 @@
             <article id="post-个人技术成长/Spring/Spring-StateMachine/1.StateMachine简单配置" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SpringStateMachinede入门
+    </h1>
+  
+
+        
+        <a href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/1.StateMachine简单配置/" class="archive-article-date">
+  	<time datetime="2019-07-19T05:55:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-19</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="1、概念"><a href="#1、概念" class="headerlink" title="1、概念"></a>1、概念</h1><p><img src=".%5Cimg%5C%E7%8A%B6%E6%80%81%E6%9C%BA%E6%A6%82%E5%BF%B5%E5%9B%BE.png" alt></p>
+        <p>状态叫的相关概念和SpringStateMachinede的简单使用</p>
+<a id="more"></a>
+<h1 id="1、概念"><a href="#1、概念" class="headerlink" title="1、概念"></a>1、概念</h1><p><img src=".%5Cimg%5C%E7%8A%B6%E6%80%81%E6%9C%BA%E6%A6%82%E5%BF%B5%E5%9B%BE.png" alt></p>
 <p><strong>状态机的要素：</strong>现态、事件、动作、次态。</p>
 <ul>
 <li>现态：当前所处的状态</li>
@@ -309,7 +326,7 @@
   
   
     <a href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/3.状态持久化/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title"></div>
+      <div class="article-nav-title">SpringStateMachine-状态叫持久化</div>
       <i class="icon-circle-right"></i>
     </a>
   

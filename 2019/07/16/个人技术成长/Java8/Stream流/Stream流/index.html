@@ -6,22 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>个人博客-XYP</title>
+  <title>Java8新特性：Stream流 | 个人博客-XYP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1、什么是Steam流Stream流是一种针对集合对象更加便利、高效的内聚操作或是大批量数据操作。Stream流分为中间操作和终止操作。中间操作返回的是一个新的Stream，终止操作返回的是我们需要的数据。 Stream流接口关系继承图：  2、Stream流方法 Collection.stream()  Stream.of()  foreach()：循环调用  filter()：选取出匹配符合条">
+  <meta name="description" content="1、什么是Steam流Stream流是一种针对集合对象更加便利、高效的内聚操作或是大批量数据操作。Stream流分为中间操作和终止操作。中间操作返回的是一个新的Stream，终止操作返回的是我们需要的数据。">
 <meta name="keywords" content="博客">
 <meta property="og:type" content="article">
-<meta property="og:title" content="个人博客-XYP">
+<meta property="og:title" content="Java8新特性：Stream流">
 <meta property="og:url" content="http://yoursite.com/2019/07/16/个人技术成长/Java8/Stream流/Stream流/index.html">
 <meta property="og:site_name" content="个人博客-XYP">
-<meta property="og:description" content="1、什么是Steam流Stream流是一种针对集合对象更加便利、高效的内聚操作或是大批量数据操作。Stream流分为中间操作和终止操作。中间操作返回的是一个新的Stream，终止操作返回的是我们需要的数据。 Stream流接口关系继承图：  2、Stream流方法 Collection.stream()  Stream.of()  foreach()：循环调用  filter()：选取出匹配符合条">
+<meta property="og:description" content="1、什么是Steam流Stream流是一种针对集合对象更加便利、高效的内聚操作或是大批量数据操作。Stream流分为中间操作和终止操作。中间操作返回的是一个新的Stream，终止操作返回的是我们需要的数据。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="e:%5C%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%5C%E4%B8%AA%E4%BA%BA%E6%8A%80%E6%9C%AF%E6%88%90%E9%95%BF%5CJava8%5CStream%E6%B5%81%5C%E5%9B%BE%E7%89%87%5CStream%E6%B5%81%E6%8E%A5%E5%8F%A3%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB%E5%9B%BE.png">
-<meta property="og:updated_time" content="2019-07-16T15:07:32.000Z">
+<meta property="og:image" content="http://yoursite.com/2019/07/16/个人技术成长/Java8/Stream流/Stream流/.%5C%E5%9B%BE%E7%89%87%5CStream%E6%B5%81%E6%8E%A5%E5%8F%A3%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB%E5%9B%BE.png">
+<meta property="og:updated_time" content="2019-08-04T08:58:49.485Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="个人博客-XYP">
-<meta name="twitter:description" content="1、什么是Steam流Stream流是一种针对集合对象更加便利、高效的内聚操作或是大批量数据操作。Stream流分为中间操作和终止操作。中间操作返回的是一个新的Stream，终止操作返回的是我们需要的数据。 Stream流接口关系继承图：  2、Stream流方法 Collection.stream()  Stream.of()  foreach()：循环调用  filter()：选取出匹配符合条">
-<meta name="twitter:image" content="e:%5C%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%5C%E4%B8%AA%E4%BA%BA%E6%8A%80%E6%9C%AF%E6%88%90%E9%95%BF%5CJava8%5CStream%E6%B5%81%5C%E5%9B%BE%E7%89%87%5CStream%E6%B5%81%E6%8E%A5%E5%8F%A3%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB%E5%9B%BE.png">
+<meta name="twitter:title" content="Java8新特性：Stream流">
+<meta name="twitter:description" content="1、什么是Steam流Stream流是一种针对集合对象更加便利、高效的内聚操作或是大批量数据操作。Stream流分为中间操作和终止操作。中间操作返回的是一个新的Stream，终止操作返回的是我们需要的数据。">
+<meta name="twitter:image" content="http://yoursite.com/2019/07/16/个人技术成长/Java8/Stream流/Stream流/.%5C%E5%9B%BE%E7%89%87%5CStream%E6%B5%81%E6%8E%A5%E5%8F%A3%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB%E5%9B%BE.png">
   
     <link rel="alternative" href="/atom.xml" title="个人博客-XYP" type="application/atom+xml">
   
@@ -146,11 +146,27 @@
             <article id="post-个人技术成长/Java8/Stream流/Stream流" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Java8新特性：Stream流
+    </h1>
+  
+
+        
+        <a href="/2019/07/16/个人技术成长/Java8/Stream流/Stream流/" class="archive-article-date">
+  	<time datetime="2019-07-16T15:07:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-16</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="1、什么是Steam流"><a href="#1、什么是Steam流" class="headerlink" title="1、什么是Steam流"></a>1、什么是Steam流</h1><p><code>Stream</code>流是一种针对集合对象更加便利、高效的内聚操作或是大批量数据操作。Stream流分为中间操作和终止操作。中间操作返回的是一个新的Stream，终止操作返回的是我们需要的数据。</p>
+<a id="more"></a>
 <p>Stream流接口关系继承图：</p>
-<p><img src="E:%5C%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%5C%E4%B8%AA%E4%BA%BA%E6%8A%80%E6%9C%AF%E6%88%90%E9%95%BF%5CJava8%5CStream%E6%B5%81%5C%E5%9B%BE%E7%89%87%5CStream%E6%B5%81%E6%8E%A5%E5%8F%A3%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB%E5%9B%BE.png" alt="Stream流接口继承关系图"></p>
+<p><img src=".%5C%E5%9B%BE%E7%89%87%5CStream%E6%B5%81%E6%8E%A5%E5%8F%A3%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB%E5%9B%BE.png" alt="Stream流接口继承关系图"></p>
 <h1 id="2、Stream流方法"><a href="#2、Stream流方法" class="headerlink" title="2、Stream流方法"></a>2、Stream流方法</h1><ol>
 <li><p><code>Collection.stream()</code></p>
 </li>
@@ -276,7 +292,7 @@
   
   
     <a href="/2019/07/15/个人技术成长/Swagger/Swagger搭建/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title"></div>
+      <div class="article-nav-title">Swagger搭建</div>
       <i class="icon-circle-right"></i>
     </a>
   

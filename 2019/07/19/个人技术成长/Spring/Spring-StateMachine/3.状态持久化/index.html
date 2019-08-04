@@ -6,19 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>个人博客-XYP</title>
+  <title>SpringStateMachine-状态叫持久化 | 个人博客-XYP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="状态机持久化每次用到的时候新创建一个状态机，太奢侈了，官方文档里面也提到过，这是个比较昂贵的行为。Spring自己提供的持久化接口能够持久化状态和恢复状态机，以此来让状态机重复使用。 ![](.\img\Spring StateMachine持久化图.webp) 说明： spring statemachine持久化时，采用了三层结构设计，persister —&amp;gt;persist —&amp;gt;re">
 <meta name="keywords" content="博客">
 <meta property="og:type" content="article">
-<meta property="og:title" content="个人博客-XYP">
+<meta property="og:title" content="SpringStateMachine-状态叫持久化">
 <meta property="og:url" content="http://yoursite.com/2019/07/19/个人技术成长/Spring/Spring-StateMachine/3.状态持久化/index.html">
 <meta property="og:site_name" content="个人博客-XYP">
 <meta property="og:description" content="状态机持久化每次用到的时候新创建一个状态机，太奢侈了，官方文档里面也提到过，这是个比较昂贵的行为。Spring自己提供的持久化接口能够持久化状态和恢复状态机，以此来让状态机重复使用。 ![](.\img\Spring StateMachine持久化图.webp) 说明： spring statemachine持久化时，采用了三层结构设计，persister —&amp;gt;persist —&amp;gt;re">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-07-19T03:27:32.000Z">
+<meta property="og:updated_time" content="2019-08-04T08:58:49.477Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="个人博客-XYP">
+<meta name="twitter:title" content="SpringStateMachine-状态叫持久化">
 <meta name="twitter:description" content="状态机持久化每次用到的时候新创建一个状态机，太奢侈了，官方文档里面也提到过，这是个比较昂贵的行为。Spring自己提供的持久化接口能够持久化状态和恢复状态机，以此来让状态机重复使用。 ![](.\img\Spring StateMachine持久化图.webp) 说明： spring statemachine持久化时，采用了三层结构设计，persister —&amp;gt;persist —&amp;gt;re">
   
     <link rel="alternative" href="/atom.xml" title="个人博客-XYP" type="application/atom+xml">
@@ -144,6 +144,21 @@
             <article id="post-个人技术成长/Spring/Spring-StateMachine/3.状态持久化" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SpringStateMachine-状态叫持久化
+    </h1>
+  
+
+        
+        <a href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/3.状态持久化/" class="archive-article-date">
+  	<time datetime="2019-07-19T03:27:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-19</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="状态机持久化"><a href="#状态机持久化" class="headerlink" title="状态机持久化"></a>状态机持久化</h1><p>每次用到的时候新创建一个状态机，太奢侈了，官方文档里面也提到过，这是个比较昂贵的行为。Spring自己提供的持久化接口能够持久化状态和恢复状态机，以此来让状态机重复使用。</p>
@@ -156,6 +171,8 @@
 <li><p>persist只是一层皮，提供了write和read两个方法，主要还是调用repository中的实际实现；我实现了一个自定义的persist，其中封装了数据写入db、从db中读取的逻辑。</p>
 </li>
 <li><p>repository中做数据的持久化</p>
+<a id="more"></a>
+
 </li>
 </ul>
 <h1 id="持久化实例"><a href="#持久化实例" class="headerlink" title="持久化实例"></a>持久化实例</h1><ul>
@@ -270,14 +287,14 @@
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          (no title)
+          SpringStateMachinede入门
         
       </div>
     </a>
   
   
     <a href="/2019/07/18/个人技术成长/Elasticsearch/2、下载与安装/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title"></div>
+      <div class="article-nav-title">Elasticsearch-下载和安装</div>
       <i class="icon-circle-right"></i>
     </a>
   

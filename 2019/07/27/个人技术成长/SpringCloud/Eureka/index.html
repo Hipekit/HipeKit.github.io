@@ -6,21 +6,21 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>个人博客-XYP</title>
+  <title>SpringCloud中的Eureka、Ribbon、Feign | 个人博客-XYP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="服务注册与发现Eureka用于服务的注册于发现，分为Eureka Server和Eureka Client两部分，Eureka Servier用作服务注册中心，Eureka Client则作为服务的提供者向Eureka Server注册服务。 创建服务注册中心创建一个Springboot项目，加入eureka server的依赖，pom文件相关依赖如下： 123456789101112131415">
+  <meta name="description" content="SpringCloud中服务注册与发现（Eureka）、服务消费（Ribbon、Feign）的简单使用">
 <meta name="keywords" content="博客">
 <meta property="og:type" content="article">
-<meta property="og:title" content="个人博客-XYP">
+<meta property="og:title" content="SpringCloud中的Eureka、Ribbon、Feign">
 <meta property="og:url" content="http://yoursite.com/2019/07/27/个人技术成长/SpringCloud/Eureka/index.html">
 <meta property="og:site_name" content="个人博客-XYP">
-<meta property="og:description" content="服务注册与发现Eureka用于服务的注册于发现，分为Eureka Server和Eureka Client两部分，Eureka Servier用作服务注册中心，Eureka Client则作为服务的提供者向Eureka Server注册服务。 创建服务注册中心创建一个Springboot项目，加入eureka server的依赖，pom文件相关依赖如下： 123456789101112131415">
+<meta property="og:description" content="SpringCloud中服务注册与发现（Eureka）、服务消费（Ribbon、Feign）的简单使用">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2019/07/27/个人技术成长/SpringCloud/Eureka/.%5Cimg%5CEureka%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83.jpg">
-<meta property="og:updated_time" content="2019-07-27T02:55:04.000Z">
+<meta property="og:updated_time" content="2019-08-04T08:58:49.468Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="个人博客-XYP">
-<meta name="twitter:description" content="服务注册与发现Eureka用于服务的注册于发现，分为Eureka Server和Eureka Client两部分，Eureka Servier用作服务注册中心，Eureka Client则作为服务的提供者向Eureka Server注册服务。 创建服务注册中心创建一个Springboot项目，加入eureka server的依赖，pom文件相关依赖如下： 123456789101112131415">
+<meta name="twitter:title" content="SpringCloud中的Eureka、Ribbon、Feign">
+<meta name="twitter:description" content="SpringCloud中服务注册与发现（Eureka）、服务消费（Ribbon、Feign）的简单使用">
 <meta name="twitter:image" content="http://yoursite.com/2019/07/27/个人技术成长/SpringCloud/Eureka/.%5Cimg%5CEureka%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83.jpg">
   
     <link rel="alternative" href="/atom.xml" title="个人博客-XYP" type="application/atom+xml">
@@ -146,9 +146,26 @@
             <article id="post-个人技术成长/SpringCloud/Eureka" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SpringCloud中的Eureka、Ribbon、Feign
+    </h1>
+  
+
+        
+        <a href="/2019/07/27/个人技术成长/SpringCloud/Eureka/" class="archive-article-date">
+  	<time datetime="2019-07-27T02:55:04.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-27</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="服务注册与发现"><a href="#服务注册与发现" class="headerlink" title="服务注册与发现"></a>服务注册与发现</h1><p>Eureka用于服务的注册于发现，分为Eureka Server和Eureka Client两部分，Eureka Servier用作服务注册中心，Eureka Client则作为服务的提供者向Eureka Server注册服务。</p>
+        <p>SpringCloud中服务注册与发现（Eureka）、服务消费（Ribbon、Feign）的简单使用</p>
+<a id="more"></a>
+<h1 id="服务注册与发现"><a href="#服务注册与发现" class="headerlink" title="服务注册与发现"></a>服务注册与发现</h1><p>Eureka用于服务的注册于发现，分为Eureka Server和Eureka Client两部分，Eureka Servier用作服务注册中心，Eureka Client则作为服务的提供者向Eureka Server注册服务。</p>
 <h2 id="创建服务注册中心"><a href="#创建服务注册中心" class="headerlink" title="创建服务注册中心"></a>创建服务注册中心</h2><p>创建一个Springboot项目，加入eureka server的依赖，pom文件相关依赖如下：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">java.version</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">java.version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">spring-cloud.version</span>&gt;</span>Greenwich.SR2<span class="tag">&lt;/<span class="name">spring-cloud.version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-server<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependencyManagement</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-dependencies<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;spring-cloud.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>import<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencyManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
@@ -329,18 +346,18 @@
   
 <nav id="article-nav">
   
-    <a href="/2019/07/29/个人技术成长/万米-从入门到入土/sbc模块/营销/进店优惠券/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/07/30/个人技术成长/前端/React/1、JSX/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          (no title)
+          React基础-JSX
         
       </div>
     </a>
   
   
-    <a href="/2019/07/25/个人技术成长/万米-从入门到入土/sbc模块/ES模块/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title"></div>
+    <a href="/2019/07/22/个人技术成长/JWT/JWT入门/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">JWT入门</div>
       <i class="icon-circle-right"></i>
     </a>
   

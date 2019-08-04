@@ -139,369 +139,23 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-个人技术成长/SpringCloud/Eureka" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="服务注册与发现"><a href="#服务注册与发现" class="headerlink" title="服务注册与发现"></a>服务注册与发现</h1><p>Eureka用于服务的注册于发现，分为Eureka Server和Eureka Client两部分，Eureka Servier用作服务注册中心，Eureka Client则作为服务的提供者向Eureka Server注册服务。</p>
-<h2 id="创建服务注册中心"><a href="#创建服务注册中心" class="headerlink" title="创建服务注册中心"></a>创建服务注册中心</h2><p>创建一个Springboot项目，加入eureka server的依赖，pom文件相关依赖如下：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">java.version</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">java.version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">spring-cloud.version</span>&gt;</span>Greenwich.SR2<span class="tag">&lt;/<span class="name">spring-cloud.version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-server<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependencyManagement</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-dependencies<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;spring-cloud.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>import<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencyManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>application.yml配置</p>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#服务名称</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  application:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">eureka-server</span></span><br><span class="line">    </span><br><span class="line"><span class="comment">#eureka server端口号</span></span><br><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">8090</span></span><br><span class="line">  </span><br><span class="line"><span class="comment"># eureka server地址</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line"><span class="attr">  instance:</span></span><br><span class="line"><span class="attr">    homename:</span> <span class="string">localhost</span></span><br><span class="line">    <span class="comment">#指定register-with-eureka和fetch-registry为false表名这是eureka server</span></span><br><span class="line"><span class="attr">  client:</span></span><br><span class="line"><span class="attr">    register-with-eureka:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">    fetch-registry:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>fetch-registry:</code> 检索服务选项，当设置为True(默认值)时，会进行服务检索,注册中心不负责检索服务。</li>
-<li><code>register-with-eureka:</code> 服务注册中心也会将自己作为客户端来尝试注册自己,为true（默认）时自动生效</li>
-</ul>
-<p>通过在启动类上添加<code>@EnableEurekaServer</code>注册启动一个服务中心</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableEurekaServer</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpirngCloudEurekaApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(SpirngCloudEurekaApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>访问yml中配置的路径<a href="http://localhost:8090" target="_blank" rel="noopener">http://localhost:8090</a></p>
-<p><img src=".%5Cimg%5CEureka%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83.jpg" alt></p>
-<h2 id="服务提供方"><a href="#服务提供方" class="headerlink" title="服务提供方"></a>服务提供方</h2><p>创建一个Springboot项目，加入eureka client的依赖，pom文件相关依赖如下：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">java.version</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">java.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">spring-cloud.version</span>&gt;</span>Greenwich.SR2<span class="tag">&lt;/<span class="name">spring-cloud.version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencyManagement</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-dependencies<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;spring-cloud.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">scope</span>&gt;</span>import<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencyManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>application.yml配置</p>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#服务名称</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  application:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">eureka-client</span></span><br><span class="line">    </span><br><span class="line"><span class="comment">#服务端口</span></span><br><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">9001</span></span><br><span class="line">  </span><br><span class="line"><span class="comment">#服务注册中心url，向注册中心注册服务</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line"><span class="attr">  client:</span></span><br><span class="line"><span class="attr">    serviceUrl:</span></span><br><span class="line"><span class="attr">      defaultZone:</span> <span class="attr">http://localhost:8090/eureka</span></span><br></pre></td></tr></table></figure>
-
-<p>创建服务接口</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DcController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">public</span> DiscoveryClient discoveryClient;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/dc"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">dc</span><span class="params">()</span></span>&#123;</span><br><span class="line">        String services = <span class="string">"Services："</span> + discoveryClient.getServices();</span><br><span class="line">        System.out.println(services);</span><br><span class="line">        <span class="keyword">return</span> services;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>通过<code>@EnableDiscoveryClient</code>开启服务发现</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableDiscoveryClient</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EurekaClientApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(EurekaClientApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>@EnableDiscoveryClient</code>：基于spring-cloud-commons依赖，相当于一个公共的服务发现；</li>
-<li><code>@EnableEurekaClient</code>：基于spring-cloud-netflix依赖，只能为eureka作用；</li>
-</ul>
-<h2 id="服务消费方"><a href="#服务消费方" class="headerlink" title="服务消费方"></a>服务消费方</h2><p>在微服务架构中，业务都会被拆分成一个独立的服务，服务与服务的通讯是基于 http restful 的。Spring cloud 有两种服务调用方式，一种是 ribbon + restTemplate，另一种是 feign。</p>
-<h3 id="Ribbon"><a href="#Ribbon" class="headerlink" title="Ribbon"></a>Ribbon</h3><p>Spring Cloud Ribbon是基于Netflix Ribbon实现的一套客户端负载均衡的工具。它是一个基于HTTP和TCP的客户端负载均衡器。它可以通过在客户端中配置ribbonServerList来设置服务端列表去轮询访问以达到均衡负载的作用。</p>
-<hr>
-<p>创建消费者，eureka-comsumer，pom文件相关内容</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-ribbon<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<hr>
-<p>application.yml配置文件</p>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  application:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">client-ribbon</span></span><br><span class="line">    </span><br><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">9005</span></span><br><span class="line"></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line"><span class="attr">  client:</span></span><br><span class="line"><span class="attr">    serviceUrl:</span></span><br><span class="line"><span class="attr">      defaultZone:</span> <span class="attr">http://localhost:8090/eureka</span></span><br></pre></td></tr></table></figure>
-
-<hr>
-<p>创建RestTemplate配置文件</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RestConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@LoadBalanced</span>  <span class="comment">//开启负载均衡</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RestTemplate <span class="title">restTemplate</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> RestTemplate();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<p>创建service服务，调用服务接口</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RibbonService</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RestTemplate restTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getMessage</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> restTemplate.getForObject(<span class="string">"http://eureka-client/dc"</span>, String.class);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>eureka-client</code>为服务方的spring.application.name，Ribbon会根据服务名选项服务实例</li>
-</ul>
-<hr>
-<p>创建contrller</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RibbonController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RibbonService ribbonService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/ribbon"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getMessage</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> ribbonService.getMessage();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<p>启动类添加<code>@EnableDiscoveryClient</code>，开启服务发现</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableDiscoveryClient</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RestApplication</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(RestApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>注意：可以通过修改服务方的端口，再次启动一个新的服务，以此观察负载均衡的效果</p>
-<h3 id="Feign"><a href="#Feign" class="headerlink" title="Feign"></a>Feign</h3><p>Feign 是一个声明式的伪 Http 客户端，它使得写 Http 客户端变得更简单。使用 Feign，只需要创建一个接口并注解。它具有可插拔的注解特性，可使用 Feign 注解和 JAX-RS 注解。Feign 支持可插拔的编码器和解码器。Feign 默认集成了 Ribbon，并和 Eureka 结合，默认实现了负载均衡的效果</p>
-<ul>
-<li>Feign 采用的是基于接口的注解</li>
-<li>Feign 整合了 ribbon</li>
-</ul>
-<hr>
-<p>创建消费方，comsumer-feign，pom文件相关内容</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-server<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-openfeign<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<hr>
-<p>application.yml</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">spring.application.name=comsumer-feign</span><br><span class="line">server.port=1001</span><br><span class="line">eureka.client.serviceUrl.defaultZone=http://localhost:8090/eureka</span><br></pre></td></tr></table></figure>
-
-<hr>
-<p>使用<code>@FeignClient</code>标注接口</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//eureka-client为服务提供方的名称</span></span><br><span class="line"><span class="meta">@FeignClient</span>(<span class="string">"eureka-client"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MessageProvider</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//dc为eureka-client方法的路径</span></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/dc"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">message</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>提供一个controller类调用接口</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MessageController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MessageProvider messageProvider;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/message"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">message</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> messageProvider.message();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>启动类Application</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableFeignClients</span></span><br><span class="line"><span class="meta">@EnableDiscoveryClient</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ComsumerFeignApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(ComsumerFeignApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>@EnableFeignClients</code>：开启扫描Spring Cloud Feign客户端的功能</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/27/个人技术成长/SpringCloud/Eureka/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-个人技术成长/万米-从入门到入土/sbc模块/ES模块" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="1、H5端商品搜索"><a href="#1、H5端商品搜索" class="headerlink" title="1、H5端商品搜索"></a>1、H5端商品搜索</h1><h1 id="1-1-接口调用"><a href="#1-1-接口调用" class="headerlink" title="1.1 接口调用"></a>1.1 接口调用</h1><ul>
-<li>goods/spuListFront：未登陆时，查询商品分页</li>
-<li>goods/allGoodsCates：从缓存中获取商品分类信息列表</li>
-<li>config/goodsDisplayDefault：前台商品列表默认展示维度</li>
-<li>isGoodsEvaluate：商品评价开关是否开启</li>
-<li>distribute/queryOpenFlag：查询平台端-社交分销总开关状态</li>
-<li>distribute/distributor-info：根据会员的Id查询该会员的分销员信息</li>
-<li>userSetting/isVisitWithLogin：查询访问是否需要登录</li>
-</ul>
-<h1 id="2、接口说明"><a href="#2、接口说明" class="headerlink" title="2、接口说明"></a>2、接口说明</h1><h1 id="2-1-goods-spuListFront"><a href="#2-1-goods-spuListFront" class="headerlink" title="2.1 goods/spuListFront"></a>2.1 goods/spuListFront</h1><h3 id="参数封装"><a href="#参数封装" class="headerlink" title="参数封装"></a>参数封装</h3><p>keword：关键词</p>
-<p>brandIds：品牌</p>
-<p>sortFlag：排序字段</p>
-<p>pageNum：第几页</p>
-<p>pageSize：每页数量</p>
-<p>cateId：分类编号</p>
-<h3 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h3><p>封装参数：</p>
-<p>根据营销编号封装SKU编号</p>
-<p>分销商品状态</p>
-<p>查询商品开关</p>
-<p>上下架状态：YES</p>
-<p>店铺状态：OPENING</p>
-<p>审核状态：CHECKED</p>
-<p>删除标识：NO</p>
-<p>会员等级</p>
-<p>会员等级折扣</p>
-<p>分页查询SKU</p>
-<ul>
-<li>拆分关键词</li>
-<li>商品分类</li>
-<li>店铺分类</li>
-<li>设定排序</li>
-<li>聚合参数（品牌、分类、规格）</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/25/个人技术成长/万米-从入门到入土/sbc模块/ES模块/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-个人技术成长/万米-从入门到入土/前端命令" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>yarn依赖安装：yarn install</p>
-<p>Yarn启动：yarn start</p>
-<p>ios运行：react-native run-ios</p>
-<p>发生如下错误：</p>
-<p>![image-20190801210449415](../../Library/Application Support/typora-user-images/image-20190801210449415.png)</p>
-<p>执行命令：react-native start –reset-cache</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/23/个人技术成长/万米-从入门到入土/前端命令/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-个人技术成长/JWT/JWT入门" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="1、什么是JWT"><a href="#1、什么是JWT" class="headerlink" title="1、什么是JWT"></a>1、什么是JWT</h1><p>Json Web Token（JWT），是为了在网络应用环境间传递声明而执行的一种基于JSON的开放标准（RFC 7519）.该Token被设计为紧凑且安全的，特别适合于分布式站点的单点登录（SSO）场景。JWT的声明一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源，也可以增加一些额外的其他业务所必须的声明信息，该token也可直接被用于认证，也可被加密。</p>
-<h1 id="2、JWT的流程"><a href="#2、JWT的流程" class="headerlink" title="2、JWT的流程"></a>2、JWT的流程</h1><ul>
-<li>用户使用用户名密码来请求服务器</li>
-<li>服务器进行验证用户的信息</li>
-<li>服务器通过验证发送给用户一个token</li>
-<li>客户端存储token，并在每次请求时附送上这个token值</li>
-<li>服务端验证token值，并返回数据</li>
-</ul>
-<h1 id="3、JWT组成"><a href="#3、JWT组成" class="headerlink" title="3、JWT组成"></a>3、JWT组成</h1><p>JWT是一个字符串，由三部分组成，<strong>头部、载荷和签名</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ</span><br></pre></td></tr></table></figure>
-
-<h2 id="头部（Header）"><a href="#头部（Header）" class="headerlink" title="头部（Header）"></a>头部（Header）</h2><p>Header部分是一个Json对象，描述JWT的元数据，通常是下面这个样子：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">"typ"</span>:<span class="string">"JWT"</span>,</span><br><span class="line">    <span class="attr">"alg"</span>:<span class="string">"HS256"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>typ</code>表示这个token的类型</li>
-<li><code>alg</code>表示签名的算法，默认是HMAC SHA256（写成HS256）</li>
-</ul>
-<p>需要对Header进行Base64编码转换成字符串，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9</span><br></pre></td></tr></table></figure>
-
-<h2 id="载荷（Payload）"><a href="#载荷（Payload）" class="headerlink" title="载荷（Payload）"></a>载荷（Payload）</h2><p>Payload部分也是一个JSON对象，用来存放实际需要传递的数据。JWT官方定义了7个字段。</p>
-<ul>
-<li>iss：签发人</li>
-<li>exp：过期时间</li>
-<li>sub：jwt面向的用户</li>
-<li>aud：接受jwt的一方</li>
-<li>nbf：生效时间</li>
-<li>iat：签发时间</li>
-<li>jti：编号</li>
-</ul>
-<p>除了以上字段，还可以自定义字段，如：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"sub"</span>:<span class="string">"12131323423"</span>,</span><br><span class="line">    <span class="attr">"name"</span>:<span class="string">"张三"</span></span><br><span class="line">    <span class="string">"admin"</span>:<span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>注意：载荷的数据是不加密的，不建议在部分加入敏感信息</strong></p>
-<h2 id="签名（Signature）"><a href="#签名（Signature）" class="headerlink" title="签名（Signature）"></a>签名（Signature）</h2><p>Signature部分是对前两部分的签名，防止数据篡改。签证信息由三部分组成：</p>
-<ul>
-<li>header（base64后的）</li>
-<li>payload（base64后的）</li>
-<li>secret</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HMACSHA256(</span><br><span class="line">  base64UrlEncode(header) + &quot;.&quot; +</span><br><span class="line">  base64UrlEncode(payload),</span><br><span class="line">  secret)</span><br></pre></td></tr></table></figure>
-
-<h1 id="4、使用方式"><a href="#4、使用方式" class="headerlink" title="4、使用方式"></a>4、使用方式</h1><p>JWT放在HTTP请求头的<code>Authorization</code>中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Authorization:Bearer&lt;token&gt;</span><br></pre></td></tr></table></figure>
-
-<h1 id="5、SpringBoot-JWT"><a href="#5、SpringBoot-JWT" class="headerlink" title="5、SpringBoot+JWT"></a>5、SpringBoot+JWT</h1>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/22/个人技术成长/JWT/JWT入门/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-个人技术成长/RabbitMQ/1.RabbitMQ" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/21/个人技术成长/RabbitMQ/1.RabbitMQ/">RabbitMQ-相关概念和简单使用</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/21/个人技术成长/RabbitMQ/1.RabbitMQ/" class="archive-article-date">
+  	<time datetime="2019-07-21T14:48:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-21</time>
+</a>
+        
+      </header>
     
     <div class="article-entry" itemprop="articleBody">
       
@@ -509,90 +163,10 @@
 <p>开发中消息队列通常有如下应用场景：</p>
 <ol>
 <li>任务异步处理。<br>将不需要同步处理的并且耗时长的操作由消息队列通知消息接收方进行异步处理。提高了应用程序的响应时间。</li>
-<li>应用程序解耦合<br>MQ相当于一个中介，生产方通过MQ与消费方交互，它将应用程序进行解耦合。</li>
-</ol>
-<h2 id="1-2-AMQP"><a href="#1-2-AMQP" class="headerlink" title="1.2 AMQP"></a>1.2 AMQP</h2><p>AMQP，即Advanced Message Queuing Protocol，一个提供统一消息服务的应用层标准高级消息队列协议，是应用层协议的一个开放标准，为面向消息的中间件设计。</p>
-<h2 id="1-3-JMS"><a href="#1-3-JMS" class="headerlink" title="1.3 JMS"></a>1.3 JMS</h2><p>JMS是java提供的一套消息服务API标准，其目的是为所有的java应用程序提供统一的消息通信的标准，类似java的<br>jdbc，只要遵循jms标准的应用程序之间都可以进行消息通信。它和AMQP有什么 不同，jms是java语言专属的消<br>息服务标准，它是在api层定义标准，并且只能用于java应用；而AMQP是在协议层定义的标准，是跨语言的 。</p>
-<h1 id="2、快速入门"><a href="#2、快速入门" class="headerlink" title="2、快速入门"></a>2、快速入门</h1><h2 id="2-1-工作原理"><a href="#2-1-工作原理" class="headerlink" title="2.1 工作原理"></a>2.1 工作原理</h2><p>RabbitMQ基本结构：</p>
-<p><img src=".%5Cimg%5CRabbitMQ.png" alt></p>
-<ul>
-<li>Broker：消息队列服务进程，此进程包括两个部分：Exchange和Queue。</li>
-<li>Exchange：：消息队列交换机，按一定的规则将消息路由转发到某个队列，对消息进行过虑。</li>
-<li>Queue：消息队列，存储消息的队列，消息到达队列并转发给指定的消费方。</li>
-<li>Producer：消息生产者，即生产方客户端，生产方客户端将消息发送到MQ。</li>
-<li>Consumer：消息消费者，即消费方客户端，接收MQ转发的消息。</li>
-</ul>
-<p>消息发布接收流程：</p>
-<p>—–发送消息—–</p>
-<ol>
-<li>生产者和Broker建立TCP连接。</li>
-<li>生产者和Broker建立通道。</li>
-<li>生产者通过通道消息发送给Broker，由Exchange将消息进行转发。</li>
-<li>Exchange将消息转发到指定的Queue（队列）</li>
-</ol>
-<p>—-接收消息—–</p>
-<ol>
-<li>消费者和Broker建立TCP连接</li>
-<li>消费者和Broker建立通道</li>
-<li>消费者监听指定的Queue（队列）</li>
-<li>当有消息到达Queue时Broker默认将消息推送给消费者。</li>
-<li>消费者接收到消息。</li>
-</ol>
-<h1 id="3、工作模式"><a href="#3、工作模式" class="headerlink" title="3、工作模式"></a>3、工作模式</h1><p>RabbitMQ有以下几种工作模式：</p>
-<ol>
-<li>Work queues</li>
-<li>Publish/Subscribe</li>
-<li>Routing</li>
-<li>Topics</li>
-<li>Header</li>
-<li>RPC</li>
-</ol>
-<h2 id="3-1-Work-queues"><a href="#3-1-Work-queues" class="headerlink" title="3.1 Work queues"></a>3.1 Work queues</h2><p>![](.\img\Work queues.png)</p>
-<p>Work queues，有两个消费端，共同消费同一个队列</p>
-<ol>
-<li>一条消息只会被一个消费者接收；</li>
-<li>rabbit采用轮询的方式将消息是平均发送给消费者的；</li>
-<li>消费者在处理完某条消息后，才会收到下一条消息。</li>
-</ol>
-<h2 id="3-2-Publish-Subscribe"><a href="#3-2-Publish-Subscribe" class="headerlink" title="3.2 Publish/Subscribe"></a>3.2 Publish/Subscribe</h2><p><img src=".%5Cimg%5CPublish-Subscribe.png" alt></p>
-<p>发布/订阅模式：</p>
-<ol>
-<li>每个消费者监听自己的队列</li>
-<li>生产者将消息发给broker，有交换机将消息转发到绑定此交换机的每个队列，每个绑定交换机的队列都将接收到消息。</li>
-</ol>
-<h2 id="3-3-Routing"><a href="#3-3-Routing" class="headerlink" title="3.3 Routing"></a>3.3 Routing</h2><p><img src=".%5Cimg%5CRouting.png" alt></p>
-<p>路由模式：</p>
-<ol>
-<li>一个交换机绑定多个队列，每个队列设置routingkey，并且一个队列可以设置多个routingkey</li>
-<li>每个消费者监听自己的队列</li>
-<li>生产者将消息发给交换机，由交换机根据routingkey来转发消息到指定的队列</li>
-</ol>
-<h2 id="3-4-Topics"><a href="#3-4-Topics" class="headerlink" title="3.4 Topics"></a>3.4 Topics</h2><p><img src=".%5Cimg%5CTopics.png" alt></p>
-<p>基于路由模式，交换机类型需指定为topic，并且routingKey可以带有通配符</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#：匹配一个或多个词，比如inform.#可以匹配inform.sms、inform.email.sms</span><br><span class="line">*：只能匹配一个词，比如inform.*可以匹配inform.sms</span><br></pre></td></tr></table></figure>
-
-<h2 id="3-5-Header"><a href="#3-5-Header" class="headerlink" title="3.5 Header"></a>3.5 Header</h2><p>header模式与routing不同的地方在于，header模式取消routingkey，使用header中的 key/value（键值对）匹配<br>队列。</p>
-<h2 id="3-6-RPC"><a href="#3-6-RPC" class="headerlink" title="3.6 RPC"></a>3.6 RPC</h2><p><img src=".%5Cimg%5CRPC.png" alt></p>
-<p>RPC即客户端远程调用服务端的方法 ，使用MQ可以实现RPC的异步调用，基于Direct交换机实现，流程如下：</p>
-<ol>
-<li>客户端即是生产者就是消费者，向RPC请求队列发送RPC调用消息，同时监听RPC响应队列。</li>
-<li>服务端监听RPC请求队列的消息，收到消息后执行服务端的方法，得到方法返回的结果</li>
-<li>服务端将RPC方法 的结果发送到RPC响应队列</li>
-<li>客户端（RPC调用方）监听RPC响应队列，接收到RPC调用结果。</li>
-</ol>
-<h1 id="4、SpringBoot整合RabbitMQ"><a href="#4、SpringBoot整合RabbitMQ" class="headerlink" title="4、SpringBoot整合RabbitMQ"></a>4、SpringBoot整合RabbitMQ</h1><h2 id="4-1-依赖"><a href="#4-1-依赖" class="headerlink" title="4.1 依赖"></a>4.1 依赖</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring‐boot‐starter‐amqp<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="4-2-配置"><a href="#4-2-配置" class="headerlink" title="4.2 配置"></a>4.2 配置</h2><p>1、application.yml</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">44000</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  application:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">test‐rabbitmq‐producer</span></span><br><span class="line"><span class="attr">rabbitmq:</span></span><br><span class="line"><span class="attr">  host:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">5672</span></span><br><span class="line"><span class="attr">  username:</span> <span class="string">guest</span></span><br><span class="line"><span class="attr">  password:</span> <span class="string">guest</span></span><br><span class="line"><span class="attr">  virtualHost:</span> <span class="string">/</span></span><br></pre></td></tr></table></figure>
-
-<p>2、定义RabbitConfig类，配置Exchange、Queue、及绑定交换机</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.demo.util;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.amqp.core.*;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Qualifier;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@program</span>: SpringRabbitMQ</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>:</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: Mr.Xu</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@create</span>: 2019-07-21 21:49</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RabbitmqConfig</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String QUEUE_INFORM_EMAIL = <span class="string">"queue_inform_email"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String QUEUE_INFORM_SMS = <span class="string">"queue_inform_sms"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String EXCHANGE_TOPICS_INFORM=<span class="string">"exchange_topics_inform"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ROUTINGKEY_EMAIL=<span class="string">"inform.#.email.#"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ROUTINGKEY_SMS=<span class="string">"inform.#.sms.#"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//声明交换机</span></span><br><span class="line">    <span class="meta">@Bean</span>(EXCHANGE_TOPICS_INFORM)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Exchange <span class="title">getExchange</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//durable(true) 持久化，mq重启之后交换机还在</span></span><br><span class="line">        <span class="keyword">return</span> ExchangeBuilder.topicExchange(EXCHANGE_TOPICS_INFORM).durable(<span class="keyword">true</span>).build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//声明队列</span></span><br><span class="line">    <span class="meta">@Bean</span>(QUEUE_INFORM_EMAIL)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Queue <span class="title">getEmailQueue</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Queue(QUEUE_INFORM_EMAIL);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span>(QUEUE_INFORM_SMS)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Queue <span class="title">getSMSQueue</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Queue(QUEUE_INFORM_SMS);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//绑定交换机</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Binding <span class="title">bindingEmail</span><span class="params">(@Qualifier(QUEUE_INFORM_EMAIL)</span> Queue queue, Exchange exchange)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> BindingBuilder.bind(queue).to(exchange).with(ROUTINGKEY_EMAIL).noargs();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Binding <span class="title">bindingSMS</span><span class="params">(@Qualifier(QUEUE_INFORM_SMS)</span> Queue queue, Exchange exchange)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> BindingBuilder.bind(queue).to(exchange).with(ROUTINGKEY_SMS).noargs();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="4-3生产者"><a href="#4-3生产者" class="headerlink" title="4.3生产者"></a>4.3生产者</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line">   <span class="keyword">private</span> RabbitTemplate rabbitTemplate;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@Test</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       String message = <span class="string">"message test"</span>;</span><br><span class="line">       <span class="comment">//参数：交换机名称，队列名称，消息数据</span></span><br><span class="line">       rabbitTemplate.convertAndSend(RabbitmqConfig.EXCHANGE_TOPICS_INFORM, <span class="string">"inform.email"</span>, message);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="4-4消费者"><a href="#4-4消费者" class="headerlink" title="4.4消费者"></a>4.4消费者</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.example.demo.util.RabbitmqConfig;</span><br><span class="line"><span class="keyword">import</span> com.rabbitmq.client.Channel;</span><br><span class="line"><span class="keyword">import</span> org.springframework.amqp.rabbit.annotation.RabbitListener;</span><br><span class="line"><span class="keyword">import</span> org.springframework.messaging.Message;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@program</span>: SpringRabbitMQ</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>:</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: Mr.Xu</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@create</span>: 2019-07-21 22:29</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConsumerHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//该注解用于监听，指定监听的队列</span></span><br><span class="line">    <span class="meta">@RabbitListener</span>(queues = &#123;RabbitmqConfig.QUEUE_INFORM_EMAIL&#125;)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">send_email</span><span class="params">(String msg, Message message, Channel channel)</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"接受到的消息"</span>+msg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
+<li>应用程序解耦合<br>MQ相当于一个中介，生产方通过MQ与消费方交互，它将应用程序进行解耦合。
+        
+          <a class="article-more-a" href="/2019/07/21/个人技术成长/RabbitMQ/1.RabbitMQ/#more">more >></a>
+        
       
 
       
@@ -634,55 +208,23 @@
 
 
   
-    <article id="post-个人技术成长/RabbitMQ/3.入门案例" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/21/个人技术成长/RabbitMQ/3.入门案例/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-个人技术成长/RabbitMQ/2.下载和安装" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/21/个人技术成长/RabbitMQ/2.下载和安装/">RabbitMW-下载和安装</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/21/个人技术成长/RabbitMQ/2.下载和安装/" class="archive-article-date">
+  	<time datetime="2019-07-21T07:25:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-21</time>
+</a>
+        
+      </header>
     
     <div class="article-entry" itemprop="articleBody">
       
@@ -692,18 +234,9 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ERLANG_HOME=Erlang的bin目录</span><br><span class="line">path=%ERLANG_HOME%</span><br></pre></td></tr></table></figure>
 
 <p><strong>注意：Erlang和RabbitMQ要注意版本选择</strong></p>
-<h2 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h2><p>下载地址：<a href="https://www.rabbitmq.com/install-windows.html" target="_blank" rel="noopener">https://www.rabbitmq.com/install-windows.html</a></p>
-<p>安装过程中选择安装目录，其他一直next，安装成功后会自动创建RabbitMQ服务并启动</p>
-<h2 id="安装管理插件"><a href="#安装管理插件" class="headerlink" title="安装管理插件"></a>安装管理插件</h2><p>打开RabbitMQ运行窗口，运行rabbitmq-plugins.bat enable rabbitmq_management</p>
-<p>在浏览器输入：<a href="http://localhost:15672" target="_blank" rel="noopener">http://localhost:15672</a></p>
-<p><img src=".%5Cimg%5C%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7.png" alt></p>
-<p>初始账户和密码：guest/guest</p>
-<p><strong>注意：</strong></p>
-<ol>
-<li>安装erlang和rabbitMQ以管理员身份运行。</li>
-<li>当卸载重新安装时会出现RabbitMQ服务注册失败，此时需要进入注册表清理erlang<br>搜索RabbitMQ、ErlSrv，将对应的项全部删除。</li>
-</ol>
-
+        
+          <a class="article-more-a" href="/2019/07/21/个人技术成长/RabbitMQ/2.下载和安装/#more">more >></a>
+        
       
 
       
@@ -748,6 +281,21 @@
     <article id="post-个人技术成长/Spring/Spring-Data-Elasticsearch/入门" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/21/个人技术成长/Spring/Spring-Data-Elasticsearch/入门/">SpringDataElasticsearch常用注解说明</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/21/个人技术成长/Spring/Spring-Data-Elasticsearch/入门/" class="archive-article-date">
+  	<time datetime="2019-07-20T16:29:54.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-21</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="1、注解"><a href="#1、注解" class="headerlink" title="1、注解"></a>1、注解</h1><ul>
@@ -756,58 +304,10 @@
 <li>indexName：对应索引库名</li>
 <li>type：对应在索引库中的类型</li>
 <li>shards：分片数量，默认5</li>
-<li>replicas：副本数量，默认1</li>
-</ul>
-</li>
-<li><p><code>@Id</code>标记一个字段为主键</p>
-</li>
-<li><p><code>@Field</code>：标记文档字段，指定字段映射属性</p>
-<ul>
-<li><p>type：字段类型。枚举：FieldType，可以是text、long、short、date、integer、object等。</p>
-<ul>
-<li>text：存储数据时候，会自动分词，并生成索引</li>
-<li>keyword：存储数据时候，不会分词建立索引</li>
-<li>Numerical：数值类型，分两类<ul>
-<li>基本数据类型：long、interger、short、byte、double、float、half_float</li>
-<li>浮点数的高精度类型：scaled_float</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li>Date：日期类型</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li>index：是否索引，boolean类型，默认true</li>
-<li>store：是否存储，boolean类型，默认false</li>
-<li>analyzer：分析器名称</li>
-</ul>
-</li>
-</ul>
-<h1 id="2、常用方法"><a href="#2、常用方法" class="headerlink" title="2、常用方法"></a>2、常用方法</h1><p><code>ElasticsearchTemplate</code></p>
-<ul>
-<li><code>createIndex(Class)</code>：根据参数Class类型创建索引并配置映射</li>
-<li><code>deleteIndex(Class)</code>：根据参数Class类型删除索引</li>
-<li>putMapping(Class)：配置映射关系</li>
-</ul>
-<p><code>ElasticsearchRepository</code></p>
-<ul>
-<li>save（）：更新/保存一条记录</li>
-<li>saveall（）：批量更新/保存数据</li>
-<li>deleteById（id）：根据id删除一条记录</li>
-<li>deleteAll（）：删除全部记录</li>
-<li>delete(Object)：删除指定的对象映射的数据</li>
-<li>findAll（）：查询所有的数据</li>
-<li>findById（id）：根据id查询数据</li>
-</ul>
-<h1 id="3、自定义查询"><a href="#3、自定义查询" class="headerlink" title="3、自定义查询"></a>3、自定义查询</h1><p>自定义Repository，继承ElasticsearchRepository</p>
-<ul>
-<li>根据SpringDateES命名规则定义方法</li>
-</ul>
-<h2 id="分页"><a href="#分页" class="headerlink" title="分页"></a>分页</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//查询方法</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;Goods&gt; <span class="title">findByName</span><span class="params">(String name, Pageable pageable)</span></span>;</span><br><span class="line"><span class="comment">//定义分页条件</span></span><br><span class="line">Pageable page = PageRequest.of(<span class="number">0</span>, <span class="number">15</span>);</span><br><span class="line"><span class="comment">//根据name分页查询数据</span></span><br><span class="line">repository.findByName(<span class="string">"张三"</span>, page);</span><br></pre></td></tr></table></figure>
-
-<h2 id="原生查询语句"><a href="#原生查询语句" class="headerlink" title="原生查询语句"></a>原生查询语句</h2>
+<li>replicas：副本数量，默认1
+        
+          <a class="article-more-a" href="/2019/07/21/个人技术成长/Spring/Spring-Data-Elasticsearch/入门/#more">more >></a>
+        
       
 
       
@@ -851,6 +351,21 @@
   
     <article id="post-个人技术成长/Elasticsearch/3、基本概念" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/20/个人技术成长/Elasticsearch/3、基本概念/">Elasticsearch-基本概念</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/20/个人技术成长/Elasticsearch/3、基本概念/" class="archive-article-date">
+  	<time datetime="2019-07-20T08:54:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-20</time>
+</a>
+        
+      </header>
     
     <div class="article-entry" itemprop="articleBody">
       
@@ -956,34 +471,11 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="1、导入依赖"><a href="#1、导入依赖" class="headerlink" title="1、导入依赖"></a>1、导入依赖</h1><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-mongodb<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h1 id="2、实体类"><a href="#2、实体类" class="headerlink" title="2、实体类"></a>2、实体类</h1><p>实体类映射mongodb中的一个集合</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">News</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line">    <span class="keyword">private</span> String title;</span><br><span class="line">    <span class="keyword">private</span> String content;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="3、Repository"><a href="#3、Repository" class="headerlink" title="3、Repository"></a>3、Repository</h1><p>定义Repository接口继承自MongoRepository</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">NewsRepository</span> <span class="keyword">extends</span> <span class="title">MongoRepository</span>&lt;<span class="title">News</span>, <span class="title">String</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据标题和内容查询</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> title</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> content</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;News&gt; <span class="title">findByTitleAndContentLike</span><span class="params">(String title, String content)</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>查询方式有两种：</p>
-<ul>
-<li>根据方法名自动推测</li>
-<li>使用@Query注解<ul>
-<li>@Query使用JSON作为查询</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Query</span>(<span class="string">"&#123;'customer' : ?0, 'age' : ?1&#125;"</span>)  <span class="comment">//等同于where custmoer = name and age = 30</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Customer <span class="title">findCustmoer</span><span class="params">(String name, Integer age)</span></span>;</span><br></pre></td></tr></table></figure>
-
-<h1 id="4、自定义查询"><a href="#4、自定义查询" class="headerlink" title="4、自定义查询"></a>4、自定义查询</h1><p>自定义一个Repository，注入MongoOperations类</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Repository</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExampleAdvancedRepository</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MongoOperations mongoOperations;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">updateAlias</span><span class="params">(String id, String alias)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mongoOperations.updateFirst(</span><br><span class="line">                Query.query(where(<span class="string">"id"</span>).is(id)),</span><br><span class="line">                <span class="keyword">new</span> Update().set(<span class="string">"alias"</span>, alias),</span><br><span class="line">                Example.class).isUpdateOfExisting();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>导入</p>
-<ul>
-<li><code>import org.springframework.data.mongodb.core.query.Query;</code></li>
-<li><code>import org.springframework.data.mongodb.core.query.Update;</code></li>
-</ul>
-<p>Query用来构建查询条件，new Update()用于修改数据</p>
-
+        <hr>
+<h2 id="title-SpringDataMongo的简单使用"><a href="#title-SpringDataMongo的简单使用" class="headerlink" title="title; SpringDataMongo的简单使用"></a>title; SpringDataMongo的简单使用</h2><h1 id="1、导入依赖"><a href="#1、导入依赖" class="headerlink" title="1、导入依赖"></a>1、导入依赖</h1><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-mongodb<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+        
+          <a class="article-more-a" href="/2019/07/20/个人技术成长/Spring/Spring-Data-Mongo/简单使用/#more">more >></a>
+        
       
 
       
@@ -1025,9 +517,347 @@
 
 
   
+    <article id="post-个人技术成长/Spring/Spring-StateMachine/2.Builder、Action和Listener" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/2.Builder、Action和Listener/">SpringStateMachine—Builder、Action和Listener的使用</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/2.Builder、Action和Listener/" class="archive-article-date">
+  	<time datetime="2019-07-19T09:54:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1、Builder"><a href="#1、Builder" class="headerlink" title="1、Builder"></a>1、Builder</h1><h2 id="1-1-单个Builder"><a href="#1-1-单个Builder" class="headerlink" title="1.1 单个Builder"></a>1.1 单个Builder</h2><p>状态机除了定义配置类，还可以通过<code>StateMachineBuilder.builder()</code>方法创建，该方法返回一个<code>StateMachineBuilder.Builder&lt;S,E&gt;</code>实例。</p>
+        
+          <a class="article-more-a" href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/2.Builder、Action和Listener/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/2.Builder、Action和Listener/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-个人技术成长/Elasticsearch/相关命令" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>查看集群节点：<a href="http://localhost:9200/_cat/nodes" target="_blank" rel="noopener">http://localhost:9200/_cat/nodes</a></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/19/个人技术成长/Elasticsearch/相关命令/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-个人技术成长/Spring/Spring-StateMachine/1.StateMachine简单配置" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/1.StateMachine简单配置/">SpringStateMachinede入门</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/1.StateMachine简单配置/" class="archive-article-date">
+  	<time datetime="2019-07-19T05:55:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>状态叫的相关概念和SpringStateMachinede的简单使用</p>
+        
+          <a class="article-more-a" href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/1.StateMachine简单配置/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/1.StateMachine简单配置/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-个人技术成长/Spring/Spring-StateMachine/3.状态持久化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/3.状态持久化/">SpringStateMachine-状态叫持久化</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/3.状态持久化/" class="archive-article-date">
+  	<time datetime="2019-07-19T03:27:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="状态机持久化"><a href="#状态机持久化" class="headerlink" title="状态机持久化"></a>状态机持久化</h1><p>每次用到的时候新创建一个状态机，太奢侈了，官方文档里面也提到过，这是个比较昂贵的行为。Spring自己提供的持久化接口能够持久化状态和恢复状态机，以此来让状态机重复使用。</p>
+<p>![](.\img\Spring StateMachine持久化图.webp)</p>
+<p><strong>说明：</strong></p>
+<p>spring statemachine持久化时，采用了三层结构设计，persister —&gt;persist —&gt;repository。</p>
+<ul>
+<li><p>其中persister中封装了persist和restore两个方法，分别用于持久化状态和恢复状态机。</p>
+</li>
+<li><p>persist只是一层皮，提供了write和read两个方法，主要还是调用repository中的实际实现；我实现了一个自定义的persist，其中封装了数据写入db、从db中读取的逻辑。</p>
+</li>
+<li><p>repository中做数据的持久化</p>
+        
+          <a class="article-more-a" href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/3.状态持久化/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/3.状态持久化/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-个人技术成长/Elasticsearch/2、下载与安装" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/18/个人技术成长/Elasticsearch/2、下载与安装/">Elasticsearch-下载和安装</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/18/个人技术成长/Elasticsearch/2、下载与安装/" class="archive-article-date">
+  	<time datetime="2019-07-18T07:19:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1、Elasticsearch下载与安装"><a href="#1、Elasticsearch下载与安装" class="headerlink" title="1、Elasticsearch下载与安装"></a>1、Elasticsearch下载与安装</h1><p>Elasticsearch官网下载路径：<a href="https://www.elastic.co/cn/downloads/elasticsearch" target="_blank" rel="noopener">https://www.elastic.co/cn/downloads/elasticsearch</a></p>
+<p>运行Elasticsearch，需配置jdk路径</p>
+<p>下载完成后，直接解压</p>
+<p>bin目录结构：</p>
+<p><img src=".%5Cimg%5Cbin%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84.jpg" alt></p>
+<p>winows环境下：</p>
+<p>在bin目录下，点击elasticsearch.bat文件或在cmd命令行窗口中进入bin目录输入<code>elasticsearch</code>，即可运行Elasticsearch</p>
+<p>安装插件：<code>elasticsearch-plugin install</code></p>
+<p>查看插件列表：<code>elasticsearch-plugin list</code></p>
+<p>在浏览其中查看安装的插件：<a href="http://localhost:9200/_cat/plugins" target="_blank" rel="noopener">http://localhost:9200/_cat/plugins</a></p>
+<h1 id="2、Kibana下载与安装"><a href="#2、Kibana下载与安装" class="headerlink" title="2、Kibana下载与安装"></a>2、Kibana下载与安装</h1><p>Kibana官网下载路径：<a href="https://www.elastic.co/cn/downloads/kibana" target="_blank" rel="noopener">https://www.elastic.co/cn/downloads/kibana</a></p>
+<p>下载后直接解压</p>
+<p>运行：直接运行Kibana的bin目录下的kibana.bat，浏览器输入：<a href="http://localhost:5601" target="_blank" rel="noopener">http://localhost:5601</a></p>
+<p>注意：启动kibana需要先启动Elasticsearch</p>
+<p><img src=".%5Cimg%5CKibana%E5%90%AF%E5%8A%A8%E7%95%8C%E9%9D%A2.jpg" alt></p>
+<p>Kibana快捷键：</p>
+<ul>
+<li>ctrl+/    查看帮助文档</li>
+<li>ctrl+option+I</li>
+<li>ctrl+option+0</li>
+<li>ctrl+option+shift+0</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/18/个人技术成长/Elasticsearch/2、下载与安装/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
     </nav>
   
 

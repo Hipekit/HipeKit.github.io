@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>个人博客-XYP</title>
+  <title>SpringStateMachine—Builder、Action和Listener的使用 | 个人博客-XYP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1、Builder1.1 单个Builder状态机除了定义配置类，还可以通过StateMachineBuilder.builder()方法创建，该方法返回一个StateMachineBuilder.Builder&amp;lt;S,E&amp;gt;实例。 12345678910111213141516171819202122public StateMachine&amp;lt;OrderState, OrderEven">
+  <meta name="description" content="1、Builder1.1 单个Builder状态机除了定义配置类，还可以通过StateMachineBuilder.builder()方法创建，该方法返回一个StateMachineBuilder.Builder&amp;lt;S,E&amp;gt;实例。">
 <meta name="keywords" content="博客">
 <meta property="og:type" content="article">
-<meta property="og:title" content="个人博客-XYP">
+<meta property="og:title" content="SpringStateMachine—Builder、Action和Listener的使用">
 <meta property="og:url" content="http://yoursite.com/2019/07/19/个人技术成长/Spring/Spring-StateMachine/2.Builder、Action和Listener/index.html">
 <meta property="og:site_name" content="个人博客-XYP">
-<meta property="og:description" content="1、Builder1.1 单个Builder状态机除了定义配置类，还可以通过StateMachineBuilder.builder()方法创建，该方法返回一个StateMachineBuilder.Builder&amp;lt;S,E&amp;gt;实例。 12345678910111213141516171819202122public StateMachine&amp;lt;OrderState, OrderEven">
+<meta property="og:description" content="1、Builder1.1 单个Builder状态机除了定义配置类，还可以通过StateMachineBuilder.builder()方法创建，该方法返回一个StateMachineBuilder.Builder&amp;lt;S,E&amp;gt;实例。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-07-19T09:54:22.000Z">
+<meta property="og:updated_time" content="2019-08-04T08:58:49.485Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="个人博客-XYP">
-<meta name="twitter:description" content="1、Builder1.1 单个Builder状态机除了定义配置类，还可以通过StateMachineBuilder.builder()方法创建，该方法返回一个StateMachineBuilder.Builder&amp;lt;S,E&amp;gt;实例。 12345678910111213141516171819202122public StateMachine&amp;lt;OrderState, OrderEven">
+<meta name="twitter:title" content="SpringStateMachine—Builder、Action和Listener的使用">
+<meta name="twitter:description" content="1、Builder1.1 单个Builder状态机除了定义配置类，还可以通过StateMachineBuilder.builder()方法创建，该方法返回一个StateMachineBuilder.Builder&amp;lt;S,E&amp;gt;实例。">
   
     <link rel="alternative" href="/atom.xml" title="个人博客-XYP" type="application/atom+xml">
   
@@ -144,9 +144,25 @@
             <article id="post-个人技术成长/Spring/Spring-StateMachine/2.Builder、Action和Listener" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SpringStateMachine—Builder、Action和Listener的使用
+    </h1>
+  
+
+        
+        <a href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/2.Builder、Action和Listener/" class="archive-article-date">
+  	<time datetime="2019-07-19T09:54:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-19</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="1、Builder"><a href="#1、Builder" class="headerlink" title="1、Builder"></a>1、Builder</h1><h2 id="1-1-单个Builder"><a href="#1-1-单个Builder" class="headerlink" title="1.1 单个Builder"></a>1.1 单个Builder</h2><p>状态机除了定义配置类，还可以通过<code>StateMachineBuilder.builder()</code>方法创建，该方法返回一个<code>StateMachineBuilder.Builder&lt;S,E&gt;</code>实例。</p>
+<a id="more"></a>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> StateMachine&lt;OrderState, OrderEvent&gt; <span class="title">builder</span><span class="params">(Order order, BeanFactory beanFactory)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        StateMachineBuilder.Builder&lt;OrderState, OrderEvent&gt; builder = StateMachineBuilder.builder();</span><br><span class="line"></span><br><span class="line">        builder.configureConfiguration()</span><br><span class="line">                .withConfiguration()</span><br><span class="line">                .machineId(<span class="string">"OGLIGATION"</span>)</span><br><span class="line">                .autoStartup(<span class="keyword">true</span>)</span><br><span class="line">                .beanFactory(beanFactory);</span><br><span class="line"></span><br><span class="line">        builder.configureStates()</span><br><span class="line">                .withStates()</span><br><span class="line">                .initial(OrderState.OBLIGATION)</span><br><span class="line">                .states(EnumSet.allOf(OrderState.class));</span><br><span class="line"></span><br><span class="line">        builder.configureTransitions()</span><br><span class="line">                .withExternal()</span><br><span class="line">                .source(OrderState.OBLIGATION).target(OrderState.ACCOUNT_PAID)</span><br><span class="line">                .event(OrderEvent.PAY)</span><br><span class="line">                .action(payAction);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> builder.build();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
 <ul>

@@ -139,377 +139,6 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-个人技术成长/Spring/Spring-StateMachine/2.Builder、Action和Listener" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="1、Builder"><a href="#1、Builder" class="headerlink" title="1、Builder"></a>1、Builder</h1><h2 id="1-1-单个Builder"><a href="#1-1-单个Builder" class="headerlink" title="1.1 单个Builder"></a>1.1 单个Builder</h2><p>状态机除了定义配置类，还可以通过<code>StateMachineBuilder.builder()</code>方法创建，该方法返回一个<code>StateMachineBuilder.Builder&lt;S,E&gt;</code>实例。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> StateMachine&lt;OrderState, OrderEvent&gt; <span class="title">builder</span><span class="params">(Order order, BeanFactory beanFactory)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        StateMachineBuilder.Builder&lt;OrderState, OrderEvent&gt; builder = StateMachineBuilder.builder();</span><br><span class="line"></span><br><span class="line">        builder.configureConfiguration()</span><br><span class="line">                .withConfiguration()</span><br><span class="line">                .machineId(<span class="string">"OGLIGATION"</span>)</span><br><span class="line">                .autoStartup(<span class="keyword">true</span>)</span><br><span class="line">                .beanFactory(beanFactory);</span><br><span class="line"></span><br><span class="line">        builder.configureStates()</span><br><span class="line">                .withStates()</span><br><span class="line">                .initial(OrderState.OBLIGATION)</span><br><span class="line">                .states(EnumSet.allOf(OrderState.class));</span><br><span class="line"></span><br><span class="line">        builder.configureTransitions()</span><br><span class="line">                .withExternal()</span><br><span class="line">                .source(OrderState.OBLIGATION).target(OrderState.ACCOUNT_PAID)</span><br><span class="line">                .event(OrderEvent.PAY)</span><br><span class="line">                .action(payAction);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> builder.build();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>自定义的builder方法需要一个BeanFactory实例，用beanFactory来创建一个StateMachine bean。</li>
-</ul>
-<h2 id="1-2-多态Builder"><a href="#1-2-多态Builder" class="headerlink" title="1.2 多态Builder"></a>1.2 多态Builder</h2><ul>
-<li>定义一个Builder接口</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Builder</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> OrderState <span class="title">getOrderState</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> StateMachine&lt;OrderState, OrderEvent&gt; <span class="title">builder</span><span class="params">(Order order, BeanFactory beanFactory)</span><span class="keyword">throws</span> Exception</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>定义Builder接口的不同实现类</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InitBuilder</span> <span class="keyword">implements</span> <span class="title">Builder</span></span>&#123;</span><br><span class="line">    ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PaidBuilder</span> <span class="keyword">implements</span> <span class="title">Builder</span> </span>&#123;</span><br><span class="line">    ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>通过不同的Builder实现类可以定义不同的状态机以针对不同的业务</p>
-<h1 id="2、Action"><a href="#2、Action" class="headerlink" title="2、Action"></a>2、Action</h1><p>定义一个<code>Action&lt;S,E&gt;</code>的实现类，重写execute方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(StateContext&lt;OrderState, OrderEvent&gt; stateContext)</span> </span>&#123;</span><br><span class="line">        Order order = stateContext.getExtendedState().get(<span class="string">"order"</span>, Order.class);</span><br><span class="line">        StateRequest stateRequest = stateContext.getExtendedState().get(<span class="string">"stateRequest"</span>, StateRequest.class);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            evaluateInternal(order, stateRequest, stateContext);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            stateContext.getExtendedState().getVariables().put(<span class="string">"exception"</span>, e);</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.err.println(<span class="string">"从状态"</span>+stateContext.getSource().getId()+<span class="string">"经过事件"</span></span><br><span class="line">                    +stateContext.getEvent()+<span class="string">"到状态"</span>+stateContext.getTarget().getId()+<span class="string">"，出现了异常[ %s ]"</span>+</span><br><span class="line">                    e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="3-、注解Listener"><a href="#3-、注解Listener" class="headerlink" title="3 、注解Listener"></a>3 、注解Listener</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@WithStateMachine</span>(id = <span class="string">"turnstileStateMachine"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StatemachineMonitor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@OnTransition</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">anyTransition</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"--- OnTransition --- init"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@OnTransition</span>(target = <span class="string">"Unlocked"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">toState1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"--- OnTransition --- toState1"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@OnStateChanged</span>(source = <span class="string">"Unlocked"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fromState1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"--- OnTransition --- fromState1"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>可以将<code>StatemachineMonitor</code>注入到<code>StateMachineBuilder.Builder</code>配置的<code>listener()</code>中</p>
-<h1 id="4、BuilderFactory"><a href="#4、BuilderFactory" class="headerlink" title="4、BuilderFactory"></a>4、BuilderFactory</h1><p>当系统业务多了以后，会有很多不同的Builder，为了统一管理和方便构建相应的状态机，使用BuilderFactory管理构建builder</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BuilderFactory</span> <span class="keyword">implements</span> <span class="title">InitializingBean</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 以state为key，相应state的Builder类为值</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Map&lt;OrderState, Builder&gt; stateBuilderMap = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;Builder&gt; stateBuilderList;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> BeanFactory beanFactory;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *根据订单中的订单状态，构建一个StateMachine</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> order</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> StateMachine&lt;OrderState, OrderEvent&gt; <span class="title">create</span><span class="params">(Order order)</span></span>&#123;</span><br><span class="line">        <span class="comment">//根据订单获取订单状态</span></span><br><span class="line">        OrderState orderState = order.getOrderState();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//根据订单状态从stateBuilderMap中获取对应的构造器</span></span><br><span class="line">        Builder builder = stateBuilderMap.get(orderState);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//根据订单和beanFactory构建一个状态机</span></span><br><span class="line">        StateMachine&lt;OrderState, OrderEvent&gt; stateMachine = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            stateMachine = builder.builder(order, beanFactory);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//将订单信息存入状态机的扩展信息中</span></span><br><span class="line">        stateMachine.getExtendedState().getVariables().put(<span class="string">"order"</span>, order);</span><br><span class="line">        <span class="keyword">return</span> stateMachine;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *当Spring将所有的bean初始化后，立即调用此方法，将所有Builder的实现类本身和对应的状态存入stateBuilderMap中</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterPropertiesSet</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        stateBuilderMap = stateBuilderList.stream().collect(Collectors.toMap(Builder::getOrderState, Function.identity()));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/2.Builder、Action和Listener/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-个人技术成长/Elasticsearch/相关命令" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ul>
-<li>查看集群节点：<a href="http://localhost:9200/_cat/nodes" target="_blank" rel="noopener">http://localhost:9200/_cat/nodes</a></li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/19/个人技术成长/Elasticsearch/相关命令/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-个人技术成长/Spring/Spring-StateMachine/1.StateMachine简单配置" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="1、概念"><a href="#1、概念" class="headerlink" title="1、概念"></a>1、概念</h1><p><img src=".%5Cimg%5C%E7%8A%B6%E6%80%81%E6%9C%BA%E6%A6%82%E5%BF%B5%E5%9B%BE.png" alt></p>
-<p><strong>状态机的要素：</strong>现态、事件、动作、次态。</p>
-<ul>
-<li>现态：当前所处的状态</li>
-<li>事件：状态改变的条件，即触发事件</li>
-<li>动作：当触发事件时，执行相应的动作，动作完毕后，迁移到新的状态</li>
-<li>次态：事件触发后，迁移的新状态。“次态”是相对于“现态”而言的，“次态”一旦被激活，就成为了“现态”</li>
-</ul>
-<p><strong>状态机动作类型：</strong></p>
-<ul>
-<li>进入动作：在进入状态进行</li>
-<li>退出动作：在退出状态进行</li>
-<li>输入动作：依赖于当前状态和输入条件进行</li>
-<li>转移动作：在进行特定转移时进行</li>
-</ul>
-<p><strong>状态机的好处：</strong>体现在代码的可维护性、可测试性上，明确的状态条件、原子的响应动作、事件驱动迁移目标状态，对于流程复杂易变的业务场景能大大减轻维护和测试的难度。</p>
-<p><strong>状态机内部流程图：</strong></p>
-<p><img src=".%5Cimg%5C%E7%8A%B6%E6%80%81%E6%9C%BA%E5%86%85%E9%83%A8%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg" alt></p>
-<h1 id="2、Spring-StateMachine"><a href="#2、Spring-StateMachine" class="headerlink" title="2、Spring StateMachine"></a>2、Spring StateMachine</h1><h2 id="核心模型"><a href="#核心模型" class="headerlink" title="核心模型"></a>核心模型</h2><ul>
-<li>StateMachineStateConfigurer 状态定义，可以定义状态的entry exit action；</li>
-<li>StateMachineTransitionConfigurer 转换定义，可以定义状态转换接受的事件，以及相应的transition action；</li>
-<li>StateMachineConfigurationConfigurer 状态机系统配置，包括action执行器(spring statemachine实例可以accept多个event，存储在内部queue中，并通过sync/async executor执行)、listener(事件监听器)等；</li>
-<li>StateMachineListener 事件监听器(通过Spring的event机制实现)，监听stateEntered(进入状态)、stateExited(离开状态)、eventNotAccepted(事件无法响应)、transition(转换)、transitionStarted(转换开始)、transitionEnded(转换结束)、stateMachineStarted(状态机启动)、stateMachineStopped(状态机关闭)、stateMachineError(状态机异常)等事件，借助listener可以trace state transition；</li>
-<li>StateMachineInterceptor 状态拦截器，不同于StateMachineListener被动监听，interceptor拥有可以改变状态变化链的能力，主要在preEvent(事件预处理)、preStateChange(状态变更的前置处理)、postStateChange(状态变更的后置处理)、preTransition(转化的前置处理)、postTransition(转化的后置处理)、stateMachineError(异常处理)等执行点生效，内部的PersistingStateChangeInterceptor(状态持久化)等都是基于这个扩展协议生效的；</li>
-<li>StateMachine 状态机实例，spring statemachine支持单例、工厂模式两种方式创建，每个statemachine有一个独有的machineId用于标识machine实例；<strong>需要注意的是statemachine实例内部存储了当前状态机等上下文相关的属性，因此这个实例不能够被多线程共享；</strong></li>
-</ul>
-<h2 id="简单实现"><a href="#简单实现" class="headerlink" title="简单实现"></a>简单实现</h2><ul>
-<li>在Maven中导入Spring StateMachine依赖</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.statemachine<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-statemachine-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.1.3.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>定义状态和事件</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span>  OrderState &#123;</span><br><span class="line">    <span class="comment">//创建订单</span></span><br><span class="line">    INIT,</span><br><span class="line">    <span class="comment">//待付款</span></span><br><span class="line">    OBLIGATION,</span><br><span class="line">    <span class="comment">//已付款</span></span><br><span class="line">    ACCOUNT_PAID,</span><br><span class="line">    <span class="comment">//已发货</span></span><br><span class="line">    DELIVERED</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> OrderEvent &#123;</span><br><span class="line">    <span class="comment">//取消支付</span></span><br><span class="line">    CANCEL_PAY,</span><br><span class="line">    <span class="comment">//支付</span></span><br><span class="line">    PAY,</span><br><span class="line">    <span class="comment">//发货</span></span><br><span class="line">    DELIVERY,</span><br><span class="line">    <span class="comment">//修改订单</span></span><br><span class="line">    UPDATE</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>状态机配置类</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableStateMachine</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyConfig</span> <span class="keyword">extends</span> <span class="title">EnumStateMachineConfigurerAdapter</span>&lt;<span class="title">OrderState</span>, <span class="title">OrderEvent</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Logger logger = LoggerFactory.getLogger(getClass());</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(StateMachineConfigurationConfigurer&lt;OrderState, OrderEvent&gt; states)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        states.withConfiguration()</span><br><span class="line">                .machineId(<span class="string">"stateMachine"</span>)</span><br><span class="line">                .autoStartup(<span class="keyword">true</span>)</span><br><span class="line">                .listener(listener());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(StateMachineStateConfigurer&lt;OrderState, OrderEvent&gt; states)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        states.withStates()</span><br><span class="line">                .initial(OrderState.INIT)</span><br><span class="line">                .states(EnumSet.allOf(OrderState.class));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(StateMachineTransitionConfigurer&lt;OrderState, OrderEvent&gt; transitions)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        transitions</span><br><span class="line">                <span class="comment">//创建 -&gt;[付款] -&gt;已付款</span></span><br><span class="line">                .withExternal()</span><br><span class="line">                .source(OrderState.INIT).target(OrderState.ACCOUNT_PAID)</span><br><span class="line">                .event(OrderEvent.PAY)</span><br><span class="line">                .and()</span><br><span class="line"></span><br><span class="line">                <span class="comment">//已付款 -&gt;[发货] -&gt;已发货</span></span><br><span class="line">                .withExternal()</span><br><span class="line">                .source(OrderState.ACCOUNT_PAID).target(OrderState.DELIVERED)</span><br><span class="line">                .event(OrderEvent.DELIVERY);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> StateMachineListener&lt;OrderState, OrderEvent&gt; <span class="title">listener</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> StateMachineListenerAdapter&lt;OrderState, OrderEvent&gt;() &#123;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">transition</span><span class="params">(Transition&lt;OrderState, OrderEvent&gt; transition)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">if</span>(transition.getTarget().getId() == OrderState.INIT) &#123;</span><br><span class="line">                    logger.info(<span class="string">"订单创建，待支付"</span>);</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span>(transition.getSource().getId() == OrderState.INIT</span><br><span class="line">                        &amp;&amp; transition.getTarget().getId() == OrderState.ACCOUNT_PAID) &#123;</span><br><span class="line">                    logger.info(<span class="string">"用户完成支付，待收货"</span>);</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span>(transition.getSource().getId() == OrderState.ACCOUNT_PAID</span><br><span class="line">                        &amp;&amp; transition.getTarget().getId() == OrderState.DELIVERED) &#123;</span><br><span class="line">                    logger.info(<span class="string">"商品已发货"</span>);</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>说明：</strong></p>
-<ul>
-<li>配置类<code>MyConfig</code>继承<code>EnumStateMachineConfigurerAdapter&lt;S,E&gt;</code>，重写config方法，这些方法用于配置状态机</li>
-</ul>
-<ul>
-<li><code>void configure(StateMachineConfigurationConfigurer&lt;OrderState, OrderEvent&gt; states)</code>用于状态机的核心配置，包括状态机的名称、是否自启、监听器、beanFactory等等。</li>
-<li><code>void configure(StateMachineStateConfigurer&lt;OrderState, OrderEvent&gt; states)</code>：定义状态机的状态，包括entry、exit等等。</li>
-<li><code>void configure(StateMachineTransitionConfigurer&lt;OrderState, OrderEvent&gt; transitions)</code>：定义状态迁移，可以定义现态、次态、触发事件和相应的action。</li>
-<li><code>StateMachineListener&lt;OrderState, OrderEvent&gt; listener()</code>定义一个监听器</li>
-</ul>
-<p>测试：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> StateMachine&lt;OrderState, OrderEvent&gt; stateMachine;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        stateMachine.sendEvent(OrderEvent.PAY);</span><br><span class="line">        stateMachine.sendEvent(OrderEvent.DELIVERY);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/1.StateMachine简单配置/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-个人技术成长/Spring/Spring-StateMachine/3.状态持久化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="状态机持久化"><a href="#状态机持久化" class="headerlink" title="状态机持久化"></a>状态机持久化</h1><p>每次用到的时候新创建一个状态机，太奢侈了，官方文档里面也提到过，这是个比较昂贵的行为。Spring自己提供的持久化接口能够持久化状态和恢复状态机，以此来让状态机重复使用。</p>
-<p>![](.\img\Spring StateMachine持久化图.webp)</p>
-<p><strong>说明：</strong></p>
-<p>spring statemachine持久化时，采用了三层结构设计，persister —&gt;persist —&gt;repository。</p>
-<ul>
-<li><p>其中persister中封装了persist和restore两个方法，分别用于持久化状态和恢复状态机。</p>
-</li>
-<li><p>persist只是一层皮，提供了write和read两个方法，主要还是调用repository中的实际实现；我实现了一个自定义的persist，其中封装了数据写入db、从db中读取的逻辑。</p>
-</li>
-<li><p>repository中做数据的持久化</p>
-</li>
-</ul>
-<h1 id="持久化实例"><a href="#持久化实例" class="headerlink" title="持久化实例"></a>持久化实例</h1><ul>
-<li>定义StateMachinePersist</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OrderStateMachinePersist</span> <span class="keyword">implements</span> <span class="title">StateMachinePersist</span>&lt;<span class="title">OrderState</span>,<span class="title">OrderEvent</span>,<span class="title">String</span>&gt; </span>&#123;</span><br><span class="line">	<span class="comment">//模仿数据库，实际这里应该注入一个Repository</span></span><br><span class="line">    <span class="keyword">static</span> Map&lt;String, OrderState&gt; cache = <span class="keyword">new</span> HashMap&lt;&gt;(<span class="number">16</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//存一个数据</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">(StateMachineContext&lt;OrderState, OrderEvent&gt; context, String contextObj)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        cache.put(contextObj, context.getState());</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">//取一个数据</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> StateMachineContext&lt;OrderState, OrderEvent&gt; <span class="title">read</span><span class="params">(String contextObj)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> cache.containsKey(contextObj) ?</span><br><span class="line">                <span class="keyword">new</span> DefaultStateMachineContext&lt;&gt;(cache.get(contextObj), <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="string">"orderStateMachine"</span>) :</span><br><span class="line">                <span class="keyword">new</span> DefaultStateMachineContext&lt;&gt;(OrderState.INIT, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="string">"orderStateMachine"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>定义<code>StateMachinePersisterConfig</code>，通过@Bean创建一个<code>StateMachinePersister</code>实例</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OrderStateMachinePersisterConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//注入OrderStateMachinePersist实例</span></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> OrderStateMachinePersist orderStateMachinePersist;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span>(name = <span class="string">"orderPersister"</span>, autowire = Autowire.BY_TYPE)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> StateMachinePersister&lt;OrderState, OrderEvent, String&gt; <span class="title">stateMachinePersister</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DefaultStateMachinePersister(orderStateMachinePersist);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>测试，注入<code>StateMachine</code>和<code>StateMachinePersister</code></li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> StateMachine&lt;OrderState, OrderEvent&gt; stateMachine;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="meta">@Qualifier</span>(<span class="string">"orderPersister"</span>)</span><br><span class="line">    <span class="keyword">private</span> StateMachinePersister&lt;OrderState, OrderEvent, String&gt; stateMachinePersister;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            stateMachinePersister.persist(stateMachine, <span class="string">"init"</span>);</span><br><span class="line">            System.out.println(<span class="string">"-----PAY-----"</span>);</span><br><span class="line">            stateMachine.sendEvent(OrderEvent.PAY);</span><br><span class="line">            stateMachinePersister.restore(stateMachine,<span class="string">"init"</span>);</span><br><span class="line"></span><br><span class="line">            stateMachinePersister.persist(stateMachine, <span class="string">"init"</span>);</span><br><span class="line">            System.out.println(<span class="string">"-----PAY-----"</span>);</span><br><span class="line">            stateMachine.sendEvent(OrderEvent.PAY);</span><br><span class="line">            stateMachinePersister.restore(stateMachine,<span class="string">"init"</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/19/个人技术成长/Spring/Spring-StateMachine/3.状态持久化/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-个人技术成长/Elasticsearch/2、下载与安装" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="1、Elasticsearch下载与安装"><a href="#1、Elasticsearch下载与安装" class="headerlink" title="1、Elasticsearch下载与安装"></a>1、Elasticsearch下载与安装</h1><p>Elasticsearch官网下载路径：<a href="https://www.elastic.co/cn/downloads/elasticsearch" target="_blank" rel="noopener">https://www.elastic.co/cn/downloads/elasticsearch</a></p>
-<p>运行Elasticsearch，需配置jdk路径</p>
-<p>下载完成后，直接解压</p>
-<p>bin目录结构：</p>
-<p><img src=".%5Cimg%5Cbin%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84.jpg" alt></p>
-<p>winows环境下：</p>
-<p>在bin目录下，点击elasticsearch.bat文件或在cmd命令行窗口中进入bin目录输入<code>elasticsearch</code>，即可运行Elasticsearch</p>
-<p>安装插件：<code>elasticsearch-plugin install</code></p>
-<p>查看插件列表：<code>elasticsearch-plugin list</code></p>
-<p>在浏览其中查看安装的插件：<a href="http://localhost:9200/_cat/plugins" target="_blank" rel="noopener">http://localhost:9200/_cat/plugins</a></p>
-<h1 id="2、Kibana下载与安装"><a href="#2、Kibana下载与安装" class="headerlink" title="2、Kibana下载与安装"></a>2、Kibana下载与安装</h1><p>Kibana官网下载路径：<a href="https://www.elastic.co/cn/downloads/kibana" target="_blank" rel="noopener">https://www.elastic.co/cn/downloads/kibana</a></p>
-<p>下载后直接解压</p>
-<p>运行：直接运行Kibana的bin目录下的kibana.bat，浏览器输入：<a href="http://localhost:5601" target="_blank" rel="noopener">http://localhost:5601</a></p>
-<p>注意：启动kibana需要先启动Elasticsearch</p>
-<p><img src=".%5Cimg%5CKibana%E5%90%AF%E5%8A%A8%E7%95%8C%E9%9D%A2.jpg" alt></p>
-<p>Kibana快捷键：</p>
-<ul>
-<li>ctrl+/    查看帮助文档</li>
-<li>ctrl+option+I</li>
-<li>ctrl+option+0</li>
-<li>ctrl+option+shift+0</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/18/个人技术成长/Elasticsearch/2、下载与安装/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-个人技术成长/Java8/方法引用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -561,33 +190,27 @@
     <article id="post-个人技术成长/Java8/Stream流/Stream流" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/16/个人技术成长/Java8/Stream流/Stream流/">Java8新特性：Stream流</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/16/个人技术成长/Java8/Stream流/Stream流/" class="archive-article-date">
+  	<time datetime="2019-07-16T15:07:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-16</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="1、什么是Steam流"><a href="#1、什么是Steam流" class="headerlink" title="1、什么是Steam流"></a>1、什么是Steam流</h1><p><code>Stream</code>流是一种针对集合对象更加便利、高效的内聚操作或是大批量数据操作。Stream流分为中间操作和终止操作。中间操作返回的是一个新的Stream，终止操作返回的是我们需要的数据。</p>
-<p>Stream流接口关系继承图：</p>
-<p><img src="E:%5C%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%5C%E4%B8%AA%E4%BA%BA%E6%8A%80%E6%9C%AF%E6%88%90%E9%95%BF%5CJava8%5CStream%E6%B5%81%5C%E5%9B%BE%E7%89%87%5CStream%E6%B5%81%E6%8E%A5%E5%8F%A3%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB%E5%9B%BE.png" alt="Stream流接口继承关系图"></p>
-<h1 id="2、Stream流方法"><a href="#2、Stream流方法" class="headerlink" title="2、Stream流方法"></a>2、Stream流方法</h1><ol>
-<li><p><code>Collection.stream()</code></p>
-</li>
-<li><p><code>Stream.of()</code></p>
-</li>
-<li><p><code>foreach()</code>：循环调用</p>
-</li>
-<li><p><code>filter()</code>：选取出匹配符合条件的元素</p>
-</li>
-<li><p><code>map()</code>：将流中的数据映射到另一个流中（类型转换 s-&gt; t）</p>
-</li>
-<li><p><code>count</code>：返回流中元素个数（这是一个终结方法）</p>
-</li>
-<li><p>limit（n）：截取前n个元素</p>
-</li>
-<li><p>skip（n）：跳过前n个元素，如果n大于流中元素的个数，则会获得一个长度为0的流</p>
-</li>
-<li><p>concat(Stream a, Stream b)：合并两个流</p>
-</li>
-</ol>
-<p>注意：stream流属于管道流，只能使用一次，第一次调用完之后，数据会流转到下一个Stream上</p>
-
+        
+          <a class="article-more-a" href="/2019/07/16/个人技术成长/Java8/Stream流/Stream流/#more">more >></a>
+        
       
 
       
@@ -632,61 +255,27 @@
     <article id="post-个人技术成长/Swagger/Swagger搭建" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/15/个人技术成长/Swagger/Swagger搭建/">Swagger搭建</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/15/个人技术成长/Swagger/Swagger搭建/" class="archive-article-date">
+  	<time datetime="2019-07-15T12:19:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-15</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="1、依赖"><a href="#1、依赖" class="headerlink" title="1、依赖"></a>1、依赖</h1><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 用于JSON API文档的生成--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.springfox<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>springfox-swagger2<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--用于文档界面展示--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.springfox<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>springfox-swagger-ui<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h1 id="2、配置类"><a href="#2、配置类" class="headerlink" title="2、配置类"></a>2、配置类</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.demo.util;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Value;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.builders.ApiInfoBuilder;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.builders.PathSelectors;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.builders.RequestHandlerSelectors;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.service.ApiInfo;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.service.Contact;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.spi.DocumentationType;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.spring.web.plugins.Docket;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.swagger2.annotations.EnableSwagger2;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableSwagger</span>2</span><br><span class="line"><span class="meta">@ConditionalOnExpression</span>(<span class="string">"$&#123;swagger.enable:true&#125;"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;swagger.contact.name&#125;"</span>)</span><br><span class="line">    String contactName;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;swagger.contact.url&#125;"</span>)</span><br><span class="line">    String contactUrl;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;swagger.contact.email&#125;"</span>)</span><br><span class="line">    String contactEmail;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;swagger.title&#125;"</span>)</span><br><span class="line">    String title;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value</span>(<span class="string">"一个Swagger示例"</span>)</span><br><span class="line">    String description;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value</span>(<span class="string">"1.0.0"</span>)</span><br><span class="line">    String version;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Docket <span class="title">createDocket</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        Docket docket = <span class="keyword">new</span> Docket(DocumentationType.SWAGGER_2)</span><br><span class="line">                .apiInfo(apiInfo())</span><br><span class="line">                .select()</span><br><span class="line">                .apis(RequestHandlerSelectors.basePackage(<span class="string">"com.example.demo"</span>))</span><br><span class="line">                .paths(PathSelectors.any())</span><br><span class="line">                .build();</span><br><span class="line">        <span class="keyword">return</span> docket;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 站点描述信息</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> ApiInfo <span class="title">apiInfo</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Contact contact = <span class="keyword">new</span> Contact(contactName, contactUrl, contactEmail);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ApiInfoBuilder()</span><br><span class="line">                .title(title)</span><br><span class="line">                .description(description)</span><br><span class="line">                .contact(contact)</span><br><span class="line">                .version(version)</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="3、注解说明"><a href="#3、注解说明" class="headerlink" title="3、注解说明"></a>3、注解说明</h1><ul>
-<li><p><code>@Api</code>：修饰整个类，描述Controller的作用</p>
-<ul>
-<li>tags：描述模块功能</li>
-</ul>
-</li>
-<li><p><code>@ApiOperation</code>：标注在方法上</p>
-<ul>
-<li>value：接口功能作用</li>
-<li>notes：接口功能详述</li>
-</ul>
-</li>
-<li><p><code>@ApiImplicitParam</code>：一个请求参数描述</p>
-<ul>
-<li>name：参数名称</li>
-<li>value：参数说明</li>
-<li>paramType：参数放在什么地方</li>
-<li>path：路径参数</li>
-<li>required：参数是否必须传</li>
-<li>dataType：参数的类型</li>
-<li>defaultValue：参数默认值</li>
-</ul>
-</li>
-<li><p><code>@ApiParam</code>：单个参数描述，与<code>@ApiImplicitParam</code>作用一样，不同的是：</p>
-<ul>
-<li><p>对Servlets或者非 JAX-RS的环境，只能使用 ApiImplicitParam。</p>
-</li>
-<li><p>在使用上，ApiImplicitParam比ApiParam具有更少的代码侵入性，只要写在方法上就可以了，但是需要提供具体的属性才能配合swagger ui解析使用。</p>
-</li>
-<li><p>ApiParam只需要较少的属性，与swagger ui配合更好。</p>
-</li>
-</ul>
-</li>
-<li><p><code>@ApiImplicitParams</code>：多个参数描述</p>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ApiImplicitParams</span>(value = &#123;<span class="meta">@ApiImplicitParam</span>(),<span class="meta">@ApiImplicitParam</span>()&#125;)</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>@ApiResponses</code>：用于请求的方法上，表示一组响应<ul>
-<li><code>@ApiResponse</code>：用在<code>@ApiResponses</code>中，一般用于表达一个错误的响应信息<pre><code>`code`：数字，例如400
-`message`：信息，例如&quot;请求参数没填好&quot;
-`response`：抛出异常的类</code></pre></li>
-</ul>
-</li>
-</ul>
-<p><code>@ApiModel</code>：标注在响应类上</p>
-<p><code>@ApiModelProperty</code>：标注在响应类的属性上</p>
-
+        <p>Swaager简单搭建和常用注解说明</p>
+        
+          <a class="article-more-a" href="/2019/07/15/个人技术成长/Swagger/Swagger搭建/#more">more >></a>
+        
       
 
       
@@ -730,6 +319,21 @@
   
     <article id="post-个人技术成长/Spring/Spring-Data-Mongo/常用实体注解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/15/个人技术成长/Spring/Spring-Data-Mongo/常用实体注解/">SpringDataMongo常用注解说明</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/15/个人技术成长/Spring/Spring-Data-Mongo/常用实体注解/" class="archive-article-date">
+  	<time datetime="2019-07-15T09:25:40.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-15</time>
+</a>
+        
+      </header>
     
     <div class="article-entry" itemprop="articleBody">
       
@@ -788,6 +392,21 @@
     <article id="post-个人技术成长/MongoDB/数据库、集合操作" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/15/个人技术成长/MongoDB/数据库、集合操作/">MongoDB-基本概念和语法</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/15/个人技术成长/MongoDB/数据库、集合操作/" class="archive-article-date">
+  	<time datetime="2019-07-15T09:23:18.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-15</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="1、数据库操作"><a href="#1、数据库操作" class="headerlink" title="1、数据库操作"></a>1、数据库操作</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use database_name</span><br></pre></td></tr></table></figure>
@@ -802,173 +421,9 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.dropDatabase()</span><br></pre></td></tr></table></figure>
 
 <p>删除数据库</p>
-<h1 id="2、集合操作"><a href="#2、集合操作" class="headerlink" title="2、集合操作"></a>2、集合操作</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.createCollection(name, options)</span><br></pre></td></tr></table></figure>
-
-<p>创建集合</p>
-<ul>
-<li><p>name：集合名称</p>
-</li>
-<li><p>options：可选参数，指定有关内存大小及索引的选项</p>
-<p>options可以是如下参数：</p>
-</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th align="left">字段</th>
-<th align="left">类型</th>
-<th align="left">描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">capped</td>
-<td align="left">布尔</td>
-<td align="left">（可选）如果为 true，则创建固定集合。固定集合是指有着固定大小的集合，当达到最大值时，它会自动覆盖最早的文档。 <strong>当该值为 true 时，必须指定 size 参数。</strong></td>
-</tr>
-<tr>
-<td align="left">autoIndexId</td>
-<td align="left">布尔</td>
-<td align="left">（可选）如为 true，自动在 _id 字段创建索引。默认为 false。</td>
-</tr>
-<tr>
-<td align="left">size</td>
-<td align="left">数值</td>
-<td align="left">（可选）为固定集合指定一个最大值（以字节计）。 <strong>如果 capped 为 true，也需要指定该字段。</strong></td>
-</tr>
-<tr>
-<td align="left">max</td>
-<td align="left">数值</td>
-<td align="left">（可选）指定固定集合中包含文档的最大数量。</td>
-</tr>
-</tbody></table>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show collections</span><br></pre></td></tr></table></figure>
-
-<p>查看已有集合</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.drop()</span><br></pre></td></tr></table></figure>
-
-<p>删除集合，返回true或false</p>
-<p><strong>注：</strong></p>
-<ol>
-<li><strong>创建一个数据库，并不会立即被查看到，只有创建了一个集合或插入数据，<code>show tables</code>才可以看到刚刚创建的数据库</strong></li>
-<li><strong>创建数据库后，可以直接插入一条数据，mongodb会自动创建一个集合</strong></li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.news.insert(&#123;"title":"大暴雨"&#125;)</span><br></pre></td></tr></table></figure>
-
-<p>集合的名称取决于db后面起的名称</p>
-<h1 id="3、文档操作"><a href="#3、文档操作" class="headerlink" title="3、文档操作"></a>3、文档操作</h1><h2 id="3-1-插入文档"><a href="#3-1-插入文档" class="headerlink" title="3.1 插入文档"></a>3.1 插入文档</h2><p>文档的数据结构和JSON基本一致，集合中的数据都是BSON格式（Binary JSON）</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">db.collection_name.insert(document)</span><br><span class="line">或</span><br><span class="line">db.collection_name.save(document)</span><br></pre></td></tr></table></figure>
-
-<p>插入文档，如果不指定_id的值，mongoDB会自动生成一个为一个的ObjectId值</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection_name.insertOne(document)</span><br></pre></td></tr></table></figure>
-
-<p>插入一条文档，<code>insertOne()</code>返回包含新插入文档的_id值的文档</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection_name.insertMany([&#123;&#125;,&#123;&#125;...])</span><br></pre></td></tr></table></figure>
-
-<p>插入多条文档，<code>insertMany</code>返回新插入文档的_id字段值的文档</p>
-<h2 id="3-2-查询文档"><a href="#3-2-查询文档" class="headerlink" title="3.2 查询文档"></a>3.2 查询文档</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.find(query, projection)</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>query：可选，使用查询操作符指定查询条件</li>
-<li>projection：可选，指定文档中某一键的值不显示或只显示某一个键的值</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.find().pretty()</span><br></pre></td></tr></table></figure>
-
-<p>以格式化的方式显示文档</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.findOne()</span><br></pre></td></tr></table></figure>
-
-<p>返回一个文档</p>
-<h3 id="3-2-1-条件查询"><a href="#3-2-1-条件查询" class="headerlink" title="3.2.1 条件查询"></a>3.2.1 条件查询</h3><table>
-<thead>
-<tr>
-<th align="left">操作</th>
-<th align="left">格式</th>
-<th align="left">范例</th>
-<th align="left">RDBMS中的类似语句</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">等于</td>
-<td align="left"><code>{&lt;key&gt;:&lt;value&gt;</code>}</td>
-<td align="left"><code>db.col.find({&quot;by&quot;:&quot;菜鸟教程&quot;}).pretty()</code></td>
-<td align="left"><code>where by = &#39;菜鸟教程&#39;</code></td>
-</tr>
-<tr>
-<td align="left">小于</td>
-<td align="left"><code>{&lt;key&gt;:{$lt:&lt;value&gt;}}</code></td>
-<td align="left"><code>db.col.find({&quot;likes&quot;:{$lt:50}}).pretty()</code></td>
-<td align="left"><code>where likes &lt; 50</code></td>
-</tr>
-<tr>
-<td align="left">小于或等于</td>
-<td align="left"><code>{&lt;key&gt;:{$lte:&lt;value&gt;}}</code></td>
-<td align="left"><code>db.col.find({&quot;likes&quot;:{$lte:50}}).pretty()</code></td>
-<td align="left"><code>where likes &lt;= 50</code></td>
-</tr>
-<tr>
-<td align="left">大于</td>
-<td align="left"><code>{&lt;key&gt;:{$gt:&lt;value&gt;}}</code></td>
-<td align="left"><code>db.col.find({&quot;likes&quot;:{$gt:50}}).pretty()</code></td>
-<td align="left"><code>where likes &gt; 50</code></td>
-</tr>
-<tr>
-<td align="left">大于或等于</td>
-<td align="left"><code>{&lt;key&gt;:{$gte:&lt;value&gt;}}</code></td>
-<td align="left"><code>db.col.find({&quot;likes&quot;:{$gte:50}}).pretty()</code></td>
-<td align="left"><code>where likes &gt;= 50</code></td>
-</tr>
-<tr>
-<td align="left">不等于</td>
-<td align="left"><code>{&lt;key&gt;:{$ne:&lt;value&gt;}}</code></td>
-<td align="left"><code>db.col.find({&quot;likes&quot;:{$ne:50}}).pretty()</code></td>
-<td align="left"><code>where likes != 50</code></td>
-</tr>
-</tbody></table>
-<h3 id="3-2-2-AND、OR"><a href="#3-2-2-AND、OR" class="headerlink" title="3.2.2 AND、OR"></a>3.2.2 AND、OR</h3><p><code>,</code>表示and</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.col.find(&#123;"by":"菜鸟教程", "title":"MongoDB 教程"&#125;).pretty()</span><br></pre></td></tr></table></figure>
-
-<p>$or表示or</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">db.col.find(</span><br><span class="line">   &#123;</span><br><span class="line">      $or: [</span><br><span class="line">         &#123;key1: value1&#125;, &#123;key2:value2&#125;</span><br><span class="line">      ]</span><br><span class="line">   &#125;</span><br><span class="line">).pretty()</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-2-3-模糊查询"><a href="#3-2-3-模糊查询" class="headerlink" title="3.2.3 模糊查询"></a>3.2.3 模糊查询</h3><p>查询title包含”教“的文档</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.find(&#123;"title":/教/&#125;)</span><br></pre></td></tr></table></figure>
-
-<p>查询 title 字段以”教”字开头的文档：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.col.find(&#123;title:/^教/&#125;)</span><br></pre></td></tr></table></figure>
-
-<p>查询 titl e字段以”教”字结尾的文档：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.col.find(&#123;title:/教$/&#125;)</span><br></pre></td></tr></table></figure>
-
-<h2 id="3-3-更新文档"><a href="#3-3-更新文档" class="headerlink" title="3.3 更新文档"></a>3.3 更新文档</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">db.collection.update(</span><br><span class="line">   &lt;query&gt;,</span><br><span class="line">   &lt;update&gt;,</span><br><span class="line">   &#123;</span><br><span class="line">     upsert: &lt;boolean&gt;,</span><br><span class="line">     multi: &lt;boolean&gt;,</span><br><span class="line">     writeConcern: &lt;document&gt;</span><br><span class="line">   &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>query：update的查询条件，类似于where后面的条件</li>
-<li>update：update的内容，类似于set</li>
-<li>upsert：可选，如果不存在update的记录，是否将这条数据插入，true插入，false不插入</li>
-<li>multi：可选，默认false，只更新找到的第一条记录，true为把找到的所有记录更新</li>
-<li>writeConcern :可选，抛出异常的级别。</li>
-</ul>
-<h2 id="3-4-删除文档"><a href="#3-4-删除文档" class="headerlink" title="3.4 删除文档"></a>3.4 删除文档</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.remove(query, justOne)</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>query：删除的条件</p>
-</li>
-<li><p>justOne：可选，true或1表示只删除一个文档，不设置或false删除所有匹配的记</p>
-<p><strong>注：<code>remove()</code>不会释放磁盘空间，需要执行db.repairDatabase()</strong></p>
-</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">删除多条记录</span></span><br><span class="line">db.collection.deleteMany(&#123;&#125;)</span><br><span class="line"><span class="meta">#</span><span class="bash">删除一条记录</span></span><br><span class="line">db.collection.deleteOne(&#123;&#125;)</span><br></pre></td></tr></table></figure>
-
-<h2 id="3-5-limit、skip和sort"><a href="#3-5-limit、skip和sort" class="headerlink" title="3.5 limit、skip和sort"></a>3.5 limit、skip和sort</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.find().limit(number)</span><br></pre></td></tr></table></figure>
-
-<p>指定读取number条记录</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.find().limit(number).skip(number)</span><br></pre></td></tr></table></figure>
-
-<p>指定读取跳过number条数据的记录</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.find().sort(&#123;key, 1&#125;)</span><br></pre></td></tr></table></figure>
-
-<p>按指定的key排序，1升序，-1降序</p>
-<p><strong>注：skip(), limilt(), sort()三个放在一起执行的时候，执行的顺序是先 sort(), 然后是 skip()，最后是显示的 limit()。</strong></p>
-<h1 id="4、索引"><a href="#4、索引" class="headerlink" title="4、索引"></a>4、索引</h1>
+        
+          <a class="article-more-a" href="/2019/07/15/个人技术成长/MongoDB/数据库、集合操作/#more">more >></a>
+        
       
 
       
@@ -1010,9 +465,401 @@
 
 
   
+    <article id="post-个人技术成长/MongoDB/概念解析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/15/个人技术成长/MongoDB/概念解析/">MongoDB-概念解析</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/15/个人技术成长/MongoDB/概念解析/" class="archive-article-date">
+  	<time datetime="2019-07-15T05:58:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-15</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1、术语说明"><a href="#1、术语说明" class="headerlink" title="1、术语说明"></a>1、术语说明</h1><table>
+<thead>
+<tr>
+<th>MongoDB术语概念</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据库</td>
+<td>数据库</td>
+</tr>
+<tr>
+<td>集合</td>
+<td>数据库表</td>
+</tr>
+<tr>
+<td>文档</td>
+<td>行</td>
+</tr>
+<tr>
+<td>字段</td>
+<td>列</td>
+</tr>
+<tr>
+<td>表联合</td>
+<td>嵌入文档</td>
+</tr>
+<tr>
+<td>主键</td>
+<td>主键</td>
+</tr>
+</tbody></table>
+<hr>
+        
+          <a class="article-more-a" href="/2019/07/15/个人技术成长/MongoDB/概念解析/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/15/个人技术成长/MongoDB/概念解析/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-个人技术成长/JPA/动态查询" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1、JpaSpecificationExecutor"><a href="#1、JpaSpecificationExecutor" class="headerlink" title="1、JpaSpecificationExecutor"></a>1、JpaSpecificationExecutor</h1><ul>
+<li><p><code>T findOne(Specification&lt;T&gt; spec)</code>：查询单个对象</p>
+</li>
+<li><p><code>List&lt;T&gt; findAll(Specification&lt;T&gt; spec)</code>：查询列表</p>
+</li>
+<li><p><code>Page&lt;T&gt; findAll(Specification&lt;T&gt; spec, Pageable pageable)</code>：分页查询</p>
+<ul>
+<li>pageable：分页参数</li>
+<li>返回值：分页pageBean</li>
+</ul>
+</li>
+<li><p><code>List&lt;T&gt; findAll(Specification&lt;T&gt; spec, Sort sort)</code>：排序查询</p>
+<ul>
+<li>Sort：排序参数</li>
+</ul>
+</li>
+<li><p><code>long count(Specification&lt;T&gt; spec)</code>：统计查询</p>
+</li>
+</ul>
+<h1 id="2、查询条件Speification"><a href="#2、查询条件Speification" class="headerlink" title="2、查询条件Speification"></a>2、查询条件Speification</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Predicate <span class="title">toPredicate</span><span class="params">(Root&lt;T&gt; root, CriteriaQuery&lt;?&gt; query, CriteriaBuilder cb)</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>root：查询的根对象</li>
+<li>CriteriaQuery：顶层查询对象，自定义查询方式</li>
+<li>CriteriaBuilder：查询的构造器，封装了很多的查询条件</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/15/个人技术成长/JPA/动态查询/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-个人技术成长/JPA/核心接口" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1、核心概念"><a href="#1、核心概念" class="headerlink" title="1、核心概念"></a>1、核心概念</h1><h2 id="1-1-CrudRepository"><a href="#1-1-CrudRepository" class="headerlink" title="1.1 CrudRepository"></a>1.1 CrudRepository</h2><p>Repository是核心接口，CrudRepository提供丰富的CRUD功能区管理实体类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">CrudRepository</span>&lt;<span class="title">T</span>, <span class="title">ID</span> <span class="keyword">extends</span> <span class="title">Serializable</span>&gt;</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class"> <span class="keyword">extends</span> <span class="title">Repository</span>&lt;<span class="title">T</span>, <span class="title">ID</span>&gt; </span>&#123;        </span><br><span class="line"></span><br><span class="line"> &lt;S extends T&gt; <span class="function">S <span class="title">save</span><span class="params">(S entity)</span></span>;    (<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"> <span class="function">T <span class="title">findOne</span><span class="params">(ID primaryKey)</span></span>;          (<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"> <span class="function">Iterable&lt;T&gt; <span class="title">findAll</span><span class="params">()</span></span>;             (<span class="number">3</span>)</span><br><span class="line"></span><br><span class="line"> <span class="function">Long <span class="title">count</span><span class="params">()</span></span>;                      (<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line"> <span class="function"><span class="keyword">void</span> <span class="title">delete</span><span class="params">(T entity)</span></span>;             (<span class="number">5</span>)</span><br><span class="line"></span><br><span class="line"> <span class="function"><span class="keyword">boolean</span> <span class="title">exists</span><span class="params">(ID primaryKey)</span></span>;     (<span class="number">6</span>)</span><br><span class="line"></span><br><span class="line"> <span class="comment">// … more functionality omitted.</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>（1）保存给定的实体</p>
+<p>（2）获取指定id实体</p>
+<p>（3）查询所有实体</p>
+<p>（4）返回实体的数量</p>
+<p>（5）删除指定的实体</p>
+<p>（6）判断指定id实体是否存在</p>
+<h2 id="1-2-PageingAndSortingRepository"><a href="#1-2-PageingAndSortingRepository" class="headerlink" title="1.2 PageingAndSortingRepository"></a>1.2 PageingAndSortingRepository</h2><p><code>PageingAndSortingRepository</code>提供对对实体的分页访问</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PagingAndSortingRepository</span>&lt;<span class="title">T</span>, <span class="title">ID</span> <span class="keyword">extends</span> <span class="title">Serializable</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="keyword">extends</span> <span class="title">CrudRepository</span>&lt;<span class="title">T</span>, <span class="title">ID</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function">Iterable&lt;T&gt; <span class="title">findAll</span><span class="params">(Sort sort)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="function">Page&lt;T&gt; <span class="title">findAll</span><span class="params">(Pageable pageable)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="2、查询方法"><a href="#2、查询方法" class="headerlink" title="2、查询方法"></a>2、查询方法</h1><ol>
+<li>声明一个接口并继承Repository或其子类，指明实体类和主键类型</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">PersonRepository</span> <span class="keyword">extends</span> <span class="title">Repository</span>&lt;<span class="title">User</span>, <span class="title">Long</span>&gt; </span>&#123; … &#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>在接口里声明查询方法</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">PersonRepository</span> <span class="keyword">extends</span> <span class="title">Repository</span>&lt;<span class="title">Person</span>, <span class="title">Long</span>&gt; </span>&#123;</span><br><span class="line">  <span class="function">List&lt;Person&gt; <span class="title">findByLastname</span><span class="params">(String lastname)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/14/个人技术成长/JPA/核心接口/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-个人技术成长/JPA/常用注解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li><p><code>@Entity</code>：被标识的类是一个实体类，可用指定name，即数据库名</p>
+</li>
+<li><p><code>@Table</code>：当实体类与数据库名不一致时需使用<code>@Table</code>说明</p>
+<ul>
+<li>name ：指定数据库名</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><code>@Column</code>：将成员属性映射到数据库表的对应字段</p>
+<pre><code>- name：映射的字段名
+    - unqiue：是否唯一
+    - nullable：是否允许为空
+    - length：数据长度
+    - insertable：是否允许插入
+    - updatetable：是否允许更新
+    - columnDefinition：定义建表时创建此列的DDL
+    - secondaryTable：从表名</code></pre></li>
+<li><p><code>@Id</code>：指定表的注解</p>
+</li>
+<li><p><code>@GeneratedValue</code>：为一个实体生成一个唯一标识的主键，标明主键的生成策略，通常与<code>@Id</code>一起使用</p>
+<pre><code>- **IDENTITY**：采用数据库 ID自增长的方式来自增主键字段，Oracle 不支持这种方式；
+- **AUTO**： JPA自动选择合适的策略，是默认选项；
+- **SEQUENCE**：通过序列产生主键，通过 `@SequenceGenerator` 注解指定序列名，MySql 不支持这种方式
+- **TABLE**：通过表产生主键，框架借由表模拟序列产生主键，使用该策略可以使应用更易于数据库移植</code></pre></li>
+<li><p><code>@Transient</code> ：标注此注解后在创建数据表的时候将会忽略该属性</p>
+</li>
+<li><p><code>@Temporal</code> ：向数据库映射日期（Date）属性时用来调整映射的精度</p>
+<ul>
+<li>Temporal.DATE</li>
+<li>Temporal.TIME</li>
+<li>Temporal.TIMESTAMP</li>
+</ul>
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/13/个人技术成长/JPA/常用注解/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-个人技术成长/Lombok/常用注解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/13/个人技术成长/Lombok/常用注解/">Lombok注解说明</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/13/个人技术成长/Lombok/常用注解/" class="archive-article-date">
+  	<time datetime="2019-07-13T14:48:28.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-13</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>@Getter/@Setter：生成getter/setter方法</li>
+<li>@ToString</li>
+<li>@NoArgsConstructor/@AllArgsConstructor/@RequiredArgsConstructor</li>
+<li>@Data：包含get/set方法，和构造，toString等方法</li>
+<li>@Builder：生成被标注类的一个构造器对象</li>
+<li>@Slf4j/@CommonsLog/@Log4j2</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/13/个人技术成长/Lombok/常用注解/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
     </nav>
   
 
