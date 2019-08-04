@@ -224,7 +224,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="语法简介"><a href="#语法简介" class="headerlink" title="语法简介"></a>语法简介</h1>
+        <h1 id="语法简介"><a href="#语法简介" class="headerlink" title="语法简介"></a>语法简介</h1><p>ES6基本语法介绍</p>
         
           <a class="article-more-a" href="/2019/08/03/个人技术成长/前端/ES6/语法简介/#more">more >></a>
         
@@ -319,9 +319,25 @@
     <article id="post-个人技术成长/前端/React/6、列表&amp;Key" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/30/个人技术成长/前端/React/6、列表&Key/">React基础-列表&amp;Key</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/30/个人技术成长/前端/React/6、列表&Key/" class="archive-article-date">
+  	<time datetime="2019-07-30T10:01:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-30</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h3><p>定义列表</p>
+        <a id="more"></a>
+<h3 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h3><p>定义列表</p>
 <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">NumberList</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> numbers = props.numbers;</span><br><span class="line">  <span class="keyword">const</span> listItems = numbers.map(<span class="function">(<span class="params">number</span>) =&gt;</span></span><br><span class="line">    &lt;li key=&#123;number.toString()&#125;&gt;</span><br><span class="line">      &#123;number&#125;</span><br><span class="line">    &lt;<span class="regexp">/li&gt;</span></span><br><span class="line"><span class="regexp">  );</span></span><br><span class="line"><span class="regexp">  return (</span></span><br><span class="line"><span class="regexp">    &lt;ul&gt;&#123;listItems&#125;&lt;/u</span>l&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];</span><br><span class="line">ReactDOM.render(</span><br><span class="line">  &lt;NumberList numbers=&#123;numbers&#125; /&gt;,</span><br><span class="line">  <span class="built_in">document</span>.getElementById(<span class="string">'root'</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 
 <ul>
@@ -389,29 +405,27 @@
     <article id="post-个人技术成长/前端/React/5、条件渲染" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/30/个人技术成长/前端/React/5、条件渲染/">React基础-条件渲染</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/30/个人技术成长/前端/React/5、条件渲染/" class="archive-article-date">
+  	<time datetime="2019-07-30T09:43:16.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-30</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="条件渲染"><a href="#条件渲染" class="headerlink" title="条件渲染"></a>条件渲染</h1><p>通过if或条件运算符来选择不同的组件进行渲染</p>
-<ul>
-<li>if</li>
-</ul>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">UserGreeting</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Welcome back!<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">GuestGreeting</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Please sign up.<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Greeting</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> isLoggedIn = props.isLoggedIn;</span><br><span class="line">  <span class="keyword">if</span> (isLoggedIn) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">UserGreeting</span> /&gt;</span>;</span></span><br><span class="line"><span class="xml">  &#125;</span></span><br><span class="line"><span class="xml">  return <span class="tag">&lt;<span class="name">GuestGreeting</span> /&gt;</span>;</span></span><br><span class="line"><span class="xml">&#125;</span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml">ReactDOM.render(</span></span><br><span class="line"><span class="xml">  // Try changing to isLoggedIn=&#123;true&#125;:</span></span><br><span class="line">  &lt;Greeting isLoggedIn=&#123;false&#125; /&gt;,</span><br><span class="line">  document.getElementById('root')</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>与运算符&amp;&amp;</li>
-</ul>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Mailbox</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> unreadMessages = props.unreadMessages;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;h1&gt;Hello!<span class="xml"><span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line">      &#123;unreadMessages.length &gt; <span class="number">0</span> &amp;&amp;</span><br><span class="line">        &lt;h2&gt;</span><br><span class="line">          You have &#123;unreadMessages.length&#125; unread messages.</span><br><span class="line">        &lt;<span class="regexp">/h2&gt;</span></span><br><span class="line"><span class="regexp">      &#125;</span></span><br><span class="line"><span class="regexp">    &lt;/</span>div&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> messages = [<span class="string">'React'</span>, <span class="string">'Re: React'</span>, <span class="string">'Re:Re: React'</span>];</span><br><span class="line">ReactDOM.render(</span><br><span class="line">  &lt;Mailbox unreadMessages=&#123;messages&#125; /&gt;,</span><br><span class="line">  <span class="built_in">document</span>.getElementById(<span class="string">'root'</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-
-<p>之所以能这样做，是因为在 JavaScript 中，<code>true &amp;&amp; expression</code> 总是会返回 <code>expression</code>, 而 <code>false &amp;&amp; expression</code> 总是会返回 <code>false</code>。</p>
-<ul>
-<li>三目运算符</li>
-</ul>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">render() &#123;</span><br><span class="line">  <span class="keyword">const</span> isLoggedIn = <span class="keyword">this</span>.state.isLoggedIn;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      The user is &lt;b&gt;&#123;isLoggedIn ? <span class="string">'currently'</span> : <span class="string">'not'</span>&#125;&lt;<span class="regexp">/b&gt; logged in.</span></span><br><span class="line"><span class="regexp">    &lt;/</span>div&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="阻止组件渲染"><a href="#阻止组件渲染" class="headerlink" title="阻止组件渲染"></a>阻止组件渲染</h3><p>通过让组件返回<code>null</code></p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">WarningBanner</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!props.warn) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    &lt;div className=<span class="string">"warning"</span>&gt;</span><br><span class="line">      Warning!</span><br><span class="line">    &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">  );</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
-
-
+        
+          <a class="article-more-a" href="/2019/07/30/个人技术成长/前端/React/5、条件渲染/#more">more >></a>
+        
       
 
       
@@ -456,6 +470,21 @@
     <article id="post-个人技术成长/前端/React/4、事件处理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/30/个人技术成长/前端/React/4、事件处理/">React基础-事件处理</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/30/个人技术成长/前端/React/4、事件处理/" class="archive-article-date">
+  	<time datetime="2019-07-30T09:18:42.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-30</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="事件处理"><a href="#事件处理" class="headerlink" title="事件处理"></a>事件处理</h1><ul>
@@ -466,30 +495,9 @@
 <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href=<span class="string">"#"</span> onClick=&#123;activeClick&#125;&gt;点击&lt;<span class="regexp">/a&gt;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">funcation activeClick(e)&#123;</span></span><br><span class="line"><span class="regexp">    e.preventDefault();</span></span><br><span class="line"><span class="regexp">    console.log('The link was clicked.');</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
 
 <p>e是一个合成事件，preventDefault用来阻止默认行为</p>
-<h3 id="事件绑定this"><a href="#事件绑定this" class="headerlink" title="事件绑定this"></a>事件绑定this</h3><p>目的：为了在onClick调用事件函数时，this不丢失，需要手动绑定</p>
-<ul>
-<li>通过bind绑定</li>
-<li>通过箭头函数</li>
-</ul>
-<h4 id="通过bind绑定"><a href="#通过bind绑定" class="headerlink" title="通过bind绑定"></a>通过bind绑定</h4><ul>
-<li>原理：<code>bind</code>能够调用函数，改变函数内部this的指向，并返回一个新函数</li>
-<li>说明：<code>bind</code>第一个参数为返回函数中this的指向，后面的参数为传给返回函数的参数</li>
-</ul>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">handBtnClick(arg1, arg2)&#123;</span><br><span class="line">    <span class="keyword">this</span>.setState(&#123;</span><br><span class="line">        msg:<span class="string">'点击事件修改state的值'</span> + arg1 + arg2</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">render()&#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">    	&lt;div&gt;</span><br><span class="line">        	&lt;button onClick=&#123;</span><br><span class="line">                    <span class="comment">//无参</span></span><br><span class="line">                    <span class="comment">//this.handBtnClick.bind(this);</span></span><br><span class="line">                    <span class="comment">//有参</span></span><br><span class="line">                    <span class="keyword">this</span>.handBtnClick.bind(<span class="keyword">this</span>, <span class="string">'abc'</span>, <span class="string">'efg'</span>);</span><br><span class="line">                &#125;&gt;事件中<span class="keyword">this</span>的处理&lt;<span class="regexp">/button&gt;</span></span><br><span class="line"><span class="regexp">            &lt;h1&gt;&#123;this.state.msg&#125;&lt;/</span>h1&gt;</span><br><span class="line">        &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">    )</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>在构造函数中使用bind</li>
-</ul>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">constructor</span>()&#123;</span><br><span class="line">    supper();</span><br><span class="line">    <span class="keyword">this</span>.handBtnClick = <span class="keyword">this</span>.handBtnClick.bind(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br><span class="line">&lt;button onClick=&#123;() =&gt; <span class="keyword">this</span>.handBtnClick(<span class="string">'abc'</span>)&#125;&gt;事件中<span class="keyword">this</span>的处理&lt;<span class="regexp">/button&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="通过箭头函数绑定"><a href="#通过箭头函数绑定" class="headerlink" title="通过箭头函数绑定"></a>通过箭头函数绑定</h4><ul>
-<li>原理：<code>箭头函数</code>中的this由所处的环境决定，自身不绑定this</li>
-</ul>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;input type=<span class="string">"button"</span> value=<span class="string">"在构造函数中绑定this并传参"</span> onClick=&#123;</span><br><span class="line">  () =&gt; &#123; <span class="keyword">this</span>.handleBtnClick(<span class="string">'参数1'</span>, <span class="string">'参数2'</span>) &#125;</span><br><span class="line">&#125; /&gt;</span><br><span class="line"></span><br><span class="line">handleBtnClick(arg1, arg2) &#123;</span><br><span class="line">  <span class="keyword">this</span>.setState(&#123;</span><br><span class="line">    msg: <span class="string">'在构造函数中绑定this并传参'</span> + arg1 + arg2</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="传参的两种方式"><a href="#传参的两种方式" class="headerlink" title="传参的两种方式"></a>传参的两种方式</h4><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;button onClick=&#123;() =&gt; <span class="keyword">this</span>.deleteRow(id, e)&#125;&gt;Delete Row&lt;<span class="regexp">/button&gt;</span></span><br><span class="line"><span class="regexp">&lt;button onClick=&#123;this.deleteRow.bind(this, id)&#125;&gt;Delete Row&lt;/</span>button&gt;</span><br></pre></td></tr></table></figure>
-
-
+        
+          <a class="article-more-a" href="/2019/07/30/个人技术成长/前端/React/4、事件处理/#more">more >></a>
+        
       
 
       
@@ -534,36 +542,29 @@
     <article id="post-个人技术成长/前端/React/3、State&amp;生命周期" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/30/个人技术成长/前端/React/3、State&生命周期/">React基础-State&amp;声明周期</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/30/个人技术成长/前端/React/3、State&生命周期/" class="archive-article-date">
+  	<time datetime="2019-07-30T07:47:20.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-30</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
         <h3 id="State"><a href="#State" class="headerlink" title="State"></a>State</h3><ul>
 <li><p>作用：给组件提供<code>组件内部</code>使用的数据</p>
 <p>在组件的构造方法中通过this.state定义组件的初始状态，通过this.setState()方法改变组件状态（改变组件状态的唯一方式）。</p>
-</li>
-</ul>
-<p>注意：</p>
-<ul>
-<li><p>只有通过<code>class</code>创建的组件才具有状态</p>
-</li>
-<li><p>状态是私有的，完全由组件控制</p>
-</li>
-<li><p>不要在 <code>state</code> 中添加 <code>render()</code> 方法中不需要的数据，会影响渲染性能！</p>
-<ul>
-<li>可以将组件内部使用但是不渲染在视图中的内容，直接添加给 this</li>
-</ul>
-</li>
-<li><p>不要在 <code>render()</code> 方法中调用 setState() 方法来修改<code>state</code>的值</p>
-<ul>
-<li>但是可以通过 <code>this.state.name = &#39;rose&#39;</code> 方式设置state（不推荐!!!!）</li>
-</ul>
-</li>
-<li><p>组件通过props导入外部的数据和方法，通过state来反映组件状态的改变。props是只读的，state是可变的。</p>
-</li>
-</ul>
-<h3 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h3><p>简单说：<strong>一个组件从开始到最后消亡所经历的各种状态，就是一个组件的生命周期</strong></p>
-<p>组件生命周期函数的定义：从组件被创建，到组件挂载到页面上运行，再到页面关闭组件被卸载，这三个阶段总是伴随着组件各种各样的事件，那么这些事件，统称为组件的生命周期函数！</p>
-<p>通过这个函数，能够让开发人员的代码，参与到组件的生命周期中。也就是说，通过钩子函数，就可以控制组件的行为</p>
-
+        
+          <a class="article-more-a" href="/2019/07/30/个人技术成长/前端/React/3、State&生命周期/#more">more >></a>
+        
       
 
       
@@ -608,43 +609,27 @@
     <article id="post-个人技术成长/前端/React/2、组件" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/30/个人技术成长/前端/React/2、组件/">React基础-组件&amp;Props</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/30/个人技术成长/前端/React/2、组件/" class="archive-article-date">
+  	<time datetime="2019-07-30T07:30:40.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-30</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="组件-amp-Props"><a href="#组件-amp-Props" class="headerlink" title="组件&amp;Props"></a>组件&amp;Props</h1><p>组件，从概念上类似于 JavaScript 函数。它接受任意的入参（即 “props”），并返回用于描述页面展示内容的 React 元素。</p>
-<h3 id="定义组件的方式"><a href="#定义组件的方式" class="headerlink" title="定义组件的方式"></a>定义组件的方式</h3><ul>
-<li>函数组件</li>
-</ul>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Welcome</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Hello, &#123;props.name&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>ES6</code>的class</li>
-</ul>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Welcome</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span></span>&#123;</span><br><span class="line">    render()&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Hello, &#123;this.props.name&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>class的使用条件：</p>
-<ul>
-<li>class必须继承React.Component</li>
-<li>class内部必须定义render()方法</li>
-</ul>
-<p>函数组件和class组件的使用说明：</p>
-<ul>
-<li>如果一个组件仅仅是为了展示数据，那么此时就可以使用函数组件</li>
-<li>如果一个组件中有一定的业务逻辑，需要操作数据，那么就需要使用class创建组件，因为此时需要state</li>
-</ul>
-<h3 id="渲染组件"><a href="#渲染组件" class="headerlink" title="渲染组件"></a>渲染组件</h3><p>React元素可以是用户自定义组件</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> element = <span class="xml"><span class="tag">&lt;<span class="name">Welcome</span> <span class="attr">name</span> = <span class="string">"Sara"</span>/&gt;</span></span></span><br></pre></td></tr></table></figure>
-
-<p>当 React 元素为用户自定义组件时，它会将 JSX 所接收的属性（attributes）转换为单个对象传递给组件，这个对象被称之为 “props”。</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">funcation Welcome(props)&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Hello, &#123;props.name&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">React.render(<span class="xml"><span class="tag">&lt;<span class="name">Welcome</span> <span class="attr">name</span>=<span class="string">"Sara"</span> /&gt;</span>, document.getElementById("root"));</span></span><br></pre></td></tr></table></figure>
-
-<p>这段代码在页面上会渲染出”Hello, Sara”</p>
-<ul>
-<li>React.render()将组件挂载到root节点上</li>
-</ul>
-<h3 id="Props"><a href="#Props" class="headerlink" title="Props"></a>Props</h3><p>Props用于把父组件的数据或方法传递给自组件，供子组件使用。</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;User name=<span class="string">'Tom'</span> age=<span class="string">'18'</span> address=<span class="string">'china'</span> /&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">//此时props的结构</span></span><br><span class="line">props = &#123;</span><br><span class="line">  name : <span class="string">'Tom'</span>,</span><br><span class="line">  age : <span class="string">'18'</span>,</span><br><span class="line">  address : <span class="string">'china'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
+        
+          <a class="article-more-a" href="/2019/07/30/个人技术成长/前端/React/2、组件/#more">more >></a>
+        
       
 
       
@@ -689,52 +674,30 @@
     <article id="post-个人技术成长/前端/React/1、JSX" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/30/个人技术成长/前端/React/1、JSX/">React基础-JSX</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/30/个人技术成长/前端/React/1、JSX/" class="archive-article-date">
+  	<time datetime="2019-07-30T06:43:40.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-30</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> element = <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>hello,world!<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br></pre></td></tr></table></figure>
+        <p>#JSX<br>JSX常用用法介绍</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> element = <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>hello,world!<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br></pre></td></tr></table></figure>
 
 <p>它被称为 JSX，是一个 JavaScript 的语法扩展。JSX不是React必需的，它只是React.createElement的语法糖。</p>
-<h3 id="JSX标签类型"><a href="#JSX标签类型" class="headerlink" title="JSX标签类型"></a>JSX标签类型</h3><p>在JSX语法中，有两种标签类型：DOM类型的标签和React组件类型的标签。DOM类型的标签要以小写字母开头，React 组件类型的标签要以大写字母开头。JSX正是通过首字母的大小写来区分标签的类型。</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//DOM类型</span></span><br><span class="line"><span class="keyword">const</span> element = <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Hello,world<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line">      </span><br><span class="line"><span class="comment">//React组件类型</span></span><br><span class="line"><span class="keyword">const</span> element = <span class="xml"><span class="tag">&lt;<span class="name">HelloWorld</span> /&gt;</span>;</span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml">//两者可以互相嵌套</span></span><br><span class="line"><span class="xml">const element = (</span></span><br><span class="line">	&lt;div&gt;</span><br><span class="line">  	&lt;HelloWorld /&gt;</span><br><span class="line"><span class="xml">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="xml">);</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="在JSX中嵌入表达式"><a href="#在JSX中嵌入表达式" class="headerlink" title="在JSX中嵌入表达式"></a>在JSX中嵌入表达式</h3><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> name = <span class="string">'Josh Perez'</span>;</span><br><span class="line"><span class="keyword">const</span> element = <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Hello, &#123;name&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"></span><br><span class="line">ReactDOM.render(</span><br><span class="line">	element,</span><br><span class="line">    <span class="built_in">document</span>.getElementById(<span class="string">'root'</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-
-<p>在 JSX 语法中，你可以在大括号内放置任何有效的 JavaScript表达式。例如，<code>2 + 2</code>，<code>user.firstName</code> 或 <code>formatName(user)</code> 都是有效的 JavaScript 表达式。</p>
-<p><strong>注意：表达式只能是JavaScript表达式，不能是多行JavaScript语句。</strong></p>
-<h3 id="JSX本身也是一个表达式"><a href="#JSX本身也是一个表达式" class="headerlink" title="JSX本身也是一个表达式"></a>JSX本身也是一个表达式</h3><p>在编译之后，JSX 表达式会被转为普通 JavaScript 函数调用，并且对其取值后得到 JavaScript 对象。</p>
-<p>也就是说，你可以在 <code>if</code> 语句和 <code>for</code> 循环的代码块中使用 JSX，将 JSX 赋值给变量，把 JSX 当作参数传入，以及从函数中返回 JSX：</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">funcation getGreeting(user)&#123;</span><br><span class="line">    <span class="keyword">if</span>(user)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Hello, &#123;formatName(user)&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Hello,Stranger.<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="JSX定义属性"><a href="#JSX定义属性" class="headerlink" title="JSX定义属性"></a>JSX定义属性</h3><p>DOM标签的部分属性名需要有所改变，class改成className，事件属姓名采用驼峰命名法。</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;div id=<span class="string">"content"</span> className=<span class="string">'foo'</span> onClick=&#123;() =&gt; <span class="built_in">console</span>.log(<span class="string">'Hello,world'</span>)&#125; /&gt;</span><br></pre></td></tr></table></figure>
-
-<p>可以通过使用引号，来将属性值指定为字符串字面量：</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> element = <span class="xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">tabIndex</span>=<span class="string">"0"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span>;</span><br></pre></td></tr></table></figure>
-
-<p>也可以使用大括号，来在属性值中插入一个 JavaScript 表达式：</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> element = <span class="xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">tabIndex</span>=<span class="string">&#123;user.userName&#125;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
-
-<h3 id="使用JSX创建子元素"><a href="#使用JSX创建子元素" class="headerlink" title="使用JSX创建子元素"></a>使用JSX创建子元素</h3><p>没有子元素，使用<code>/&gt;</code>直接闭合</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> element = <span class="xml"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&#123;user.avatarUrl&#125;</span> /&gt;</span>;</span></span><br></pre></td></tr></table></figure>
-
-<p>创建子元素，使用<code>()</code>包起来</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> element = (</span><br><span class="line">	&lt;div&gt;</span><br><span class="line">    	&lt;h1&gt;Hello!<span class="xml"><span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line">        &lt;h2&gt;Good to see you here.&lt;<span class="regexp">/h2&gt;</span></span><br><span class="line"><span class="regexp">    &lt;/</span>div&gt;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-
-<h3 id="JSX定义对象"><a href="#JSX定义对象" class="headerlink" title="JSX定义对象"></a>JSX定义对象</h3><p>以下两种方式完全等同：</p>
-<ul>
-<li>直接创建</li>
-</ul>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> element = (</span><br><span class="line">  &lt;h1 className=<span class="string">"greeting"</span>&gt;</span><br><span class="line">    Hello, world!</span><br><span class="line">  &lt;<span class="regexp">/h1&gt;</span></span><br><span class="line"><span class="regexp">);</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>通过<code>React.createElement</code>创建</li>
-</ul>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> element = React.createElement(</span><br><span class="line">	<span class="string">'h1'</span>,</span><br><span class="line">    &#123;<span class="attr">className</span> : <span class="string">'greeting'</span>&#125;,</span><br><span class="line">    <span class="string">'Hello, world!'</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-
-<h3 id="元素渲染"><a href="#元素渲染" class="headerlink" title="元素渲染"></a>元素渲染</h3><p>元素定义之后，可以通过<code>ReactDOM.render()</code>方法进行渲染</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> element = <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Hello, world<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line">ReactDOM.render(elementj, <span class="built_in">document</span>.getElementById(<span class="string">'root'</span>));</span><br></pre></td></tr></table></figure>
-
-
+        
+          <a class="article-more-a" href="/2019/07/30/个人技术成长/前端/React/1、JSX/#more">more >></a>
+        
       
 
       

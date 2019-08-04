@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>个人博客-XYP</title>
+  <title>React基础-列表&amp;Key | 个人博客-XYP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="列表定义列表 1234567891011121314151617function NumberList(props) &amp;#123;  const numbers = props.numbers;  const listItems = numbers.map((number) =&amp;gt;    &amp;lt;li key=&amp;#123;number.toString()&amp;#125;&amp;gt;      &amp;#1">
+  <meta name="description" content="列表定义列表 1234567891011121314151617function NumberList(props) &amp;#123;  const numbers = props.numbers;  const listItems = numbers.map((number) =&amp;gt;    &amp;lt;li key=&amp;#123;number.toString()&amp;#125;&amp;gt;      &amp;#">
 <meta name="keywords" content="博客">
 <meta property="og:type" content="article">
-<meta property="og:title" content="个人博客-XYP">
+<meta property="og:title" content="React基础-列表&amp;Key">
 <meta property="og:url" content="http://yoursite.com/2019/07/30/个人技术成长/前端/React/6、列表&Key/index.html">
 <meta property="og:site_name" content="个人博客-XYP">
-<meta property="og:description" content="列表定义列表 1234567891011121314151617function NumberList(props) &amp;#123;  const numbers = props.numbers;  const listItems = numbers.map((number) =&amp;gt;    &amp;lt;li key=&amp;#123;number.toString()&amp;#125;&amp;gt;      &amp;#1">
+<meta property="og:description" content="列表定义列表 1234567891011121314151617function NumberList(props) &amp;#123;  const numbers = props.numbers;  const listItems = numbers.map((number) =&amp;gt;    &amp;lt;li key=&amp;#123;number.toString()&amp;#125;&amp;gt;      &amp;#">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-07-30T10:01:22.000Z">
+<meta property="og:updated_time" content="2019-08-04T08:20:27.308Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="个人博客-XYP">
-<meta name="twitter:description" content="列表定义列表 1234567891011121314151617function NumberList(props) &amp;#123;  const numbers = props.numbers;  const listItems = numbers.map((number) =&amp;gt;    &amp;lt;li key=&amp;#123;number.toString()&amp;#125;&amp;gt;      &amp;#1">
+<meta name="twitter:title" content="React基础-列表&amp;Key">
+<meta name="twitter:description" content="列表定义列表 1234567891011121314151617function NumberList(props) &amp;#123;  const numbers = props.numbers;  const listItems = numbers.map((number) =&amp;gt;    &amp;lt;li key=&amp;#123;number.toString()&amp;#125;&amp;gt;      &amp;#">
   
     <link rel="alternative" href="/atom.xml" title="个人博客-XYP" type="application/atom+xml">
   
@@ -144,9 +144,25 @@
             <article id="post-个人技术成长/前端/React/6、列表&amp;Key" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      React基础-列表&amp;Key
+    </h1>
+  
+
+        
+        <a href="/2019/07/30/个人技术成长/前端/React/6、列表&Key/" class="archive-article-date">
+  	<time datetime="2019-07-30T10:01:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-30</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h3><p>定义列表</p>
+        <a id="more"></a>
+<h3 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h3><p>定义列表</p>
 <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">NumberList</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> numbers = props.numbers;</span><br><span class="line">  <span class="keyword">const</span> listItems = numbers.map(<span class="function">(<span class="params">number</span>) =&gt;</span></span><br><span class="line">    &lt;li key=&#123;number.toString()&#125;&gt;</span><br><span class="line">      &#123;number&#125;</span><br><span class="line">    &lt;<span class="regexp">/li&gt;</span></span><br><span class="line"><span class="regexp">  );</span></span><br><span class="line"><span class="regexp">  return (</span></span><br><span class="line"><span class="regexp">    &lt;ul&gt;&#123;listItems&#125;&lt;/u</span>l&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];</span><br><span class="line">ReactDOM.render(</span><br><span class="line">  &lt;NumberList numbers=&#123;numbers&#125; /&gt;,</span><br><span class="line">  <span class="built_in">document</span>.getElementById(<span class="string">'root'</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 
 <ul>
@@ -273,7 +289,7 @@
   
   
     <a href="/2019/07/30/个人技术成长/前端/React/5、条件渲染/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title"></div>
+      <div class="article-nav-title">React基础-条件渲染</div>
       <i class="icon-circle-right"></i>
     </a>
   
