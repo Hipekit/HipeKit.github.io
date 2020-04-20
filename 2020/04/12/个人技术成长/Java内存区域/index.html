@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="风胤">
+
+
+
+
+    <meta name="keywords" content="博客">
+
+
+<title>JVM-内存管理 | 个人博客-风胤</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">风胤的博客</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">风胤的博客</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">返回顶部</a>
+        <a onclick="go_bottom()">去底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">JVM-内存管理</h1>
+            
+                <div class="post-meta">
+                    
+                        作者: <a itemprop="author" rel="author" href="/">风胤</a>
+                    
+
+                    
+                        <span class="post-time">
+                        时间: <a href="#">四月 12, 2020&nbsp;&nbsp;16:28:19</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    分类:
+                            
+                                <a href="/categories/Java/">Java</a>
+                            
+                                <a href="/categories/Java/JVM/">JVM</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h1><h2 id="运行时数据区域"><a href="#运行时数据区域" class="headerlink" title="运行时数据区域"></a>运行时数据区域</h2><p>Java虚拟机在执行Java程序的过程中会把它管理的内存划分为几个不同的数据区域。有些是随着虚拟机的进程一直存在，有些是随着线程的启动、结束而创建、销毁。</p>
+<img src="img/运行时数据区域.png" alt="运行时数据区域" width="50%" height="50%">
+
+<h3 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h3><p>程序计数器是一块较小的空间，它可以看作是当前线程所执行的字节码的行号指示器。Java虚拟机是多线程执行的，每个处理器同一时刻只会处理一条线程，为了线程切换后能恢复到正确的位置，每个线程都需要一个独立的计数器，各个线程之间的计数器互不影响，独立存储，这种类型的区域就是“线程私有”的。</p>
+<h3 id="虚拟机栈"><a href="#虚拟机栈" class="headerlink" title="虚拟机栈"></a>虚拟机栈</h3><p>虚拟机栈也是线程私有的，它的生命周期和线程相同。每个方法在执行的时候都会创建一个栈桢<code>Stack Frame</code>，用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法被调用直到执行完毕的过程就是该方法所对应的栈桢出栈和入栈的过程。</p>
+<p>虚拟机栈被关注的最多的地方就是局部变量表，局部变量表中存放了编译期可知的各种基本数据类型（<code>boolean</code>、<code>byte</code>、<code>char</code>、<code>short</code>、<code>int</code>、<code>float</code>、<code>long</code>、<code>double</code>）、对象引用（<code>reference</code>类型）和<code>returnAddress</code>类型。</p>
+<blockquote>
+<ul>
+<li><p>reference类型：可能是一个执行对象起始地址的引用指针，也可能是指向代表这个对象的句柄或者其他与此对象相关的位置。</p>
+</li>
+<li><p>returnAddress类型：执行一条字节码指令的地址。</p>
+</li>
+</ul>
+</blockquote>
+<p>虚拟机栈有两种异常：</p>
+<ul>
+<li>如果线程请求的栈深度大于虚拟机所允许的深度，将抛出<code>StackOverflowError</code>异常。</li>
+<li>如果虚拟机在动态扩展栈时无法申请到足够的内存空间，则抛出<code>OutOfMemoryError</code>异常。</li>
+</ul>
+<h3 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h3><p>本地方法栈<code>Native Method Stacks</code>与虚拟机所发挥的作用很相似，区别在于虚拟机栈为虚拟机执行Java方法服务，而本地方法栈为虚拟机使用本地方法<code>Native</code>服务。</p>
+<blockquote>
+<p>抛出异常与虚拟机栈一样</p>
+</blockquote>
+<h3 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h3><p>Java堆是虚拟机所管理的内存中最大的一块。Java堆是被所有线程共享的一块区域，在虚拟机启动时创建。堆中存放的是“几乎”所有的对象实例。Java堆是垃圾收集器集中管理的区域，因此也被称为“GC堆”。</p>
+<p>Java堆可以是固定大小的，也可以是可扩展的（通过<code>-Xms</code>和<code>-Xmx</code>设置）。</p>
+<p>如果Java堆中没有足够内存分配给对象，并且也无法扩展时，会抛出OOM异常。</p>
+<blockquote>
+<p>根据《Java虚拟机规范》规定，堆可以处于物理上不连续的内存空间，但在逻辑上它因该是连续的。</p>
+</blockquote>
+<h3 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h3><p>方法区也是线程共享的区域，用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译后的代码等数据。</p>
+<p>方法区的垃圾收集主要针对常量池的回收和对类型的卸载。</p>
+<blockquote>
+<p>如果方法区无法满足新的内存分配需求，将抛出OOM异常。</p>
+</blockquote>
+<h3 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a>运行时常量池</h3><p>该区域是常量池的一部分，Class文件中的常量池表在类加载后会被放入到方法区的运行时常量池中。</p>
+<p>运行时常量池除了可以存放编译期产生的常量，运行期也可以将新的常量放入。</p>
+<p>当常量无法申请到内存分配时，抛出OOM异常。</p>
+<blockquote>
+<p>常量池表：存放编译期生成的各种字面两和符号引用</p>
+</blockquote>
+<h2 id="HotSpot虚拟机对象"><a href="#HotSpot虚拟机对象" class="headerlink" title="HotSpot虚拟机对象"></a>HotSpot虚拟机对象</h2><h3 id="对象的创建过程"><a href="#对象的创建过程" class="headerlink" title="对象的创建过程"></a>对象的创建过程</h3><ul>
+<li><p>检查new指令的参数是否能在常量池中定位到一个类的符号引用</p>
+</li>
+<li><p>检查这个符号引用所代表的类是否已被加载、解析和初始化过，如果没有，必须执行相应的类加载过程。</p>
+</li>
+<li><p>为新对象分配内存</p>
+<blockquote>
+<p>方式一：指针碰撞</p>
+<p>假设堆是绝对规整的，被分成两块，一块是被使用过的内存，另一块是空闲的内存，中间放着一个指针作为分界点的指示器。被分配的内存大小就是这个指示器向空闲内存挪动的距离（与对象大小相同）</p>
+</blockquote>
+<blockquote>
+<p>方式二：空闲列表</p>
+<p>假设堆是不规整的，虚拟机需要直接维护一个列表，用于记录哪些内存块是可用的，在分配的时候从列表中找出一块足够大的内存分配给对象，同时更新表中的记录。</p>
+</blockquote>
+</li>
+</ul>
+<ul>
+<li><p>将分配到的内存空间都初始化为零值</p>
+</li>
+<li><p>对对象进行必要的设置</p>
+<blockquote>
+<p>这个对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希码、对象的GC分代年龄等信息</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h3><h4 id="对象头"><a href="#对象头" class="headerlink" title="对象头"></a>对象头</h4><ul>
+<li><p>对象自身的运行时数据</p>
+<blockquote>
+<p>哈希码、GC分代年龄、锁状态标志、线程持有的锁、偏向线程ID、偏向时间戳等</p>
+</blockquote>
+</li>
+<li><p>类型指针</p>
+<blockquote>
+<p>指向类型元数据</p>
+</blockquote>
+</li>
+<li><p>数组长度（如果对象是数组）</p>
+</li>
+</ul>
+<h4 id="实例数据"><a href="#实例数据" class="headerlink" title="实例数据"></a>实例数据</h4><p>程序代码定义的各种类型的字段内容，数据的存储顺序受虚拟机分配策略参数<code>-XX:FieldAllocationStyle</code>和字段在Java源码中定义顺序的影响。</p>
+<blockquote>
+<p>HotSpot默认分配顺序：longs/doubles、ints、shorts/chars、bytes/booleans、oops(Ordinary Object Pointers)</p>
+</blockquote>
+<h4 id="对齐填充"><a href="#对齐填充" class="headerlink" title="对齐填充"></a>对齐填充</h4><p>对齐填充可以不存在，仅仅是占位符的作用。对于HotSpot而言，由于对象的大小必须是8的整数倍，如果该对象不足8的整数倍，需要通过对象填充补全。</p>
+<h3 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h3><ul>
+<li><p>句柄</p>
+<img src="img/句柄访问对象.png" alt="通过句柄访问对象" width="50%" height="50%">
+</li>
+<li><p>直接指针</p>
+<img src="img/直接指针访问对象.png" alt="通过直接指针访问对象" width="50%" height="50%"></li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>作者:</span>
+                        <span>风胤</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>链接:</span>
+                        <span><a href="http://yoursite.com/2020/04/12/个人技术成长/Java内存区域/">http://yoursite.com/2020/04/12/个人技术成长/Java内存区域/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>标签:</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Java/"># Java</a>
+                    
+                        <a href="/tags/JVM/"># JVM</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">返回</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/12/个人技术成长/程序编译和代码优化/">程序编译和代码优化</a>
+            
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© 风胤 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
