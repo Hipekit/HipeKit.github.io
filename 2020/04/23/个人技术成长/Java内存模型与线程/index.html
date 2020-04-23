@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="风胤">
+
+
+
+
+    <meta name="keywords" content="博客">
+
+
+<title>JVM-Java内存模型与线程 | 潮技</title>
+
+
+
+    <link rel="icon" href="/image/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">风胤的博客</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">风胤的博客</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">返回顶部</a>
+        <a onclick="go_bottom()">去底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">JVM-Java内存模型与线程</h1>
+            
+                <div class="post-meta">
+                    
+                        作者: <a itemprop="author" rel="author" href="/">风胤</a>
+                    
+
+                    
+                        <span class="post-time">
+                        时间: <a href="#">四月 23, 2020&nbsp;&nbsp;20:26:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    分类:
+                            
+                                <a href="/categories/Java/">Java</a>
+                            
+                                <a href="/categories/Java/JVM/">JVM</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="1、Java内存模型"><a href="#1、Java内存模型" class="headerlink" title="1、Java内存模型"></a>1、Java内存模型</h2><p>Java内存模型用来<code>屏蔽</code>各种硬件和操作系统的<code>内存访问差异</code>，以实现让Java程序在各种平台下都能达到<code>一致的内存访问效果</code>。</p>
+<h3 id="1-1、主内存与工作内存"><a href="#1-1、主内存与工作内存" class="headerlink" title="1.1、主内存与工作内存"></a>1.1、主内存与工作内存</h3><p>Java中内存模型的主要目的是定义程序中各种变量的访问规则，即关注在虚拟机中把变量值存储到内存和从内存中取出变量值这样的底层细节。</p>
+<p>Java内存模型规定所有的变量都存储在主内存中。每条线程有自己的工作内存，线程的工作内存中保存了被该线程使用的变量的主内存副本，线程对变量的所有操作都必须在工作内存中进行，不能直接读写主内存中的数据。线程间变量值的传递需要通过主内存完成。</p>
+<img src="https://raw.githubusercontent.com/Hipekit/Pic/master/img/20200423202443.png" width="80%" height="50%">
+
+<blockquote>
+<p>此处的变量与Java中的变量有所区别，它包括实例字段、静态字段和构成数组对象的元素，但不包括局部变量与方法参数。</p>
+</blockquote>
+<h3 id="1-2、内存间的交互操作"><a href="#1-2、内存间的交互操作" class="headerlink" title="1.2、内存间的交互操作"></a>1.2、内存间的交互操作</h3><p>Java内存模型定义了如下8种操作来规定内存间交互的实现细节。</p>
+<p>作用于主内存的变量</p>
+<ul>
+<li><code>lock（锁定）</code>：把一个变量标识为一条线程独占的状态</li>
+<li><code>unlock（解锁）</code>：把一个处于锁定状态的变量释放出来，释放后的变量可以被其他线程锁定</li>
+<li><code>read（读取）</code>：把一个变量的值从主内存传输到线程的工作内存中</li>
+</ul>
+<p>作用于工作内存的变量</p>
+<ul>
+<li><code>load（载入）</code>：把<code>read</code>操作中读到的变量值放入工作内存的变量副本中</li>
+<li><code>use（使用）</code>：把工作内存中一个变量的值传给执行引擎</li>
+<li><code>assign（赋值）</code>：把一个从执行引擎中接收的值赋给工作内存中的变量</li>
+<li><code>store（存储）</code>：把工作内存中的一个变量的值传到主内存中</li>
+</ul>
+<p>作用于主内存的变量</p>
+<ul>
+<li><code>write（写入）</code>：把<code>store</code>操作从工作内存中得到的变量值放入主内存的变量中</li>
+</ul>
+<blockquote>
+<p>上述8种操作必须满足如下规则：</p>
+<ul>
+<li>不允许<code>read</code>和<code>load</code>、<code>store</code>和<code>write</code>单独出现</li>
+<li>不允许线程丢弃它最近的<code>assign</code>操作，即变量<code>assign</code>后必须同步回主内存</li>
+<li>不允许线程把没有发生<code>assign</code>操作的数据同步回主内中</li>
+<li>不允许在工作内存中使用一个未被初始化（<code>load</code>和<code>assign</code>）的变量</li>
+<li><code>lock</code>操作具有互斥性，执行了几次<code>lock</code>，就需要几次<code>unlock</code></li>
+<li><code>lock</code>一个变量后，需要重新执行<code>load</code>或<code>assign</code>操作</li>
+<li>不允许<code>unlock</code>一个未被<code>lock</code>的变量，也不运行<code>unlock</code>其他线程锁定的变量</li>
+<li><code>unlock</code>操作之前必须把改变了同步回主内存中</li>
+</ul>
+</blockquote>
+<h3 id="1-3、volatile变量"><a href="#1-3、volatile变量" class="headerlink" title="1.3、volatile变量"></a>1.3、volatile变量</h3><p>volatile变量有两个特性：</p>
+<ol>
+<li>volatile变量对所有的线程都是可见的</li>
+<li>禁止指令重排序优化</li>
+</ol>
+<h4 id="保证可见性"><a href="#保证可见性" class="headerlink" title="保证可见性"></a>保证可见性</h4><p>volatile只能保证可见性，它不一定是线程安全的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">volatile</span> <span class="keyword">int</span> num = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">increase</span><span class="params">()</span></span>&#123;</span><br><span class="line">        num ++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        Thread[] threads = <span class="keyword">new</span> Thread[<span class="number">10</span>];</span><br><span class="line">        <span class="keyword">for</span> (Thread thread : threads) &#123;</span><br><span class="line">            thread = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line">                        increase();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            thread.start();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//等待所有线程都结束</span></span><br><span class="line">        <span class="keyword">while</span> (Thread.activeCount() &gt; <span class="number">1</span>)&#123;</span><br><span class="line">            Thread.yield();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(num);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>每次运行程序输出结果都是小于100000，原因在于<code>num++</code>并不是一个原子性的操作，它包括读取变量的原始值、+1操作、写入工作内存。</p>
+<p>在不符合以下2条规则的情况，仍然要加锁来保证原子性：</p>
+<ul>
+<li>运算结果不依赖变量的当前值，或者能够保证只有一个线程能修改变量的值</li>
+<li>变量不会与其他的状态变量共同参与不变约束</li>
+</ul>
+<h4 id="指令重排序"><a href="#指令重排序" class="headerlink" title="指令重排序"></a>指令重排序</h4><p>禁止指令重排序有两层意思：</p>
+<ol>
+<li>在对volatile变量进行操作时，该语句之前的操作对后面的操作都是可见的</li>
+<li>不会改变volatile变量操作的位置，其操作在原来的语句执行顺序中不能改变</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//x是非volatile变量</span></span><br><span class="line"><span class="comment">//flag是volatile变量</span></span><br><span class="line">x = <span class="number">2</span>;          <span class="comment">//语句1</span></span><br><span class="line">flag = <span class="keyword">true</span>;    <span class="comment">//语句2</span></span><br><span class="line">x = <span class="number">3</span>;          <span class="comment">//语句3</span></span><br></pre></td></tr></table></figure>
+
+<p>语句1的执行结果对于语句2和语句3都是可见的；语句2不会放到语句1的前面，也不会放在语句3的后面。</p>
+<p>之所以会有这样的效果，通过汇编代码发现加入volatile关键字，会多一个lock前缀指令。这个指令相当于一个内存屏障，内存屏障会提供3个功能：</p>
+<ul>
+<li>确保不会把后面的指令重排序到内存屏障之前的位置，也不会把前面的指令重排序到内存屏障后面</li>
+<li>将缓存写入内存</li>
+<li>写操作会导致其他处理器对应的缓存无效化</li>
+</ul>
+<p>Java内存模型对volatile变量定义的特殊规则：</p>
+<ul>
+<li><code>load</code>和<code>use</code>必须一起出现，<code>load</code>在前，<code>use</code>在后；即每次使用一个变量时必须先从主内存刷新最新的值</li>
+<li><code>assign</code>和<code>store</code>必须一起出现，<code>assign</code>在前，<code>store</code>在后；即每次修改变量后都必须同步回主内存</li>
+</ul>
+<h3 id="1-4、先行发生原则"><a href="#1-4、先行发生原则" class="headerlink" title="1.4、先行发生原则"></a>1.4、先行发生原则</h3><p>Java中有一个<code>Happens-Before</code>原则，用于判断数据是否存在竞争，线程是否安全。</p>
+<ul>
+<li><strong>程序次序规则</strong>：在一个线程内，按照流程控制流顺序，前面的操作先行发生于后面的操作</li>
+<li><strong>管程锁定规则</strong>：一个<code>unloack</code>必须先行发生于同一个锁的<code>lock</code></li>
+<li><strong>volatile变量规则</strong>：对一个<code>volatile</code>变量的写操作先行发生于后面对该变量的读操作</li>
+<li><strong>线程启动规则</strong>：<code>Thread</code>对象的<code>start()</code>方法先行发生于此线程的每一个动作</li>
+<li><strong>线程终止规则</strong>：线程中的所有操作都先行发生于对此线程的终止检测，检测手段有<code>Thread::join()</code>、<code>Thread::isAlive()</code></li>
+<li><strong>线程中断规则</strong>：对线程<code>interrupt()</code>方法的调用先行发生于被中断线程的中断事件检测</li>
+<li><strong>对象终结规则</strong>：一个对象的初始化先行发生于它的<code>finalize</code>方法的开始</li>
+<li><strong>传递性</strong>：操作A先行发生于操作B，操作B先行发生于操作C，那么操作A肯定先行发生于操作C</li>
+</ul>
+<blockquote>
+<p>先行发生不等于时间上的先发生</p>
+</blockquote>
+<h2 id="2、Java与线程"><a href="#2、Java与线程" class="headerlink" title="2、Java与线程"></a>2、Java与线程</h2><h3 id="2-1、线程的实现"><a href="#2-1、线程的实现" class="headerlink" title="2.1、线程的实现"></a>2.1、线程的实现</h3><p>实现线程主要有三种方式：</p>
+<ul>
+<li>使用<strong>内核线程</strong>实现（1:1）</li>
+<li>使用<strong>用户线程</strong>实现（1:N）</li>
+<li>使用<strong>用户线程</strong>加<strong>轻量级进程</strong>混合实现（N:M）</li>
+</ul>
+<h4 id="2-1-1、内核线程实现"><a href="#2-1-1、内核线程实现" class="headerlink" title="2.1.1、内核线程实现"></a>2.1.1、内核线程实现</h4><p>内核线程<code>KLT</code>是由操作系统内核支持的线程，这种线程由内核来完成线程切换，内核通过操纵调度器对线程进行调度，并负责将线程的任务映射到各个处理器上。</p>
+<p>程序使用的线程其实使用的是内核线程的一种高级接口————<strong>轻量级进程</strong><code>LWP</code>，轻量级进程就是我们通常意义上讲的线程，每个<code>LWP</code>都由一个内核线程支持，其关系是<strong>1:1</strong>的关系。</p>
+<img src="https://raw.githubusercontent.com/Hipekit/Pic/master/img/20200423202507.png" width="80%" height="50%">
+
+<h4 id="2-1-2、用户线程实现"><a href="#2-1-2、用户线程实现" class="headerlink" title="2.1.2、用户线程实现"></a>2.1.2、用户线程实现</h4><p>广义上说，一个线程只要不是内核线程，都可以认为是用户线程<code>UT</code>的一种。</p>
+<p>狭义上，用户线程是完全建立在用户空间的线程库上，系统内核不能感知到用户线程的存在及如何实现的。用户线程的建立、同步、销毁和调度完全在用户态中完成，不需要内核的帮助。用户线程可以不需要切换到内核态，操作快速且消耗低，能支持大规模的线程数量，进程与用户线程是1:N的关系。</p>
+<h4 id="2-1-3、混合实现"><a href="#2-1-3、混合实现" class="headerlink" title="2.1.3、混合实现"></a>2.1.3、混合实现</h4><p>混合实现下，既存在用户线程，也存在轻量级进程。用户线程还是完全建立在用户空间中，轻量级进程作为用户线程和内核线程之间的桥梁，这样可以使用内核线程提供的线程调度功能及处理器映射，并且用户线程的系统调用要通过轻量级进程来完成。在这种混合模式中，用户线程和轻量级进程的关系是N:M。</p>
+<img src="https://raw.githubusercontent.com/Hipekit/Pic/master/img/20200423202519.png" width="80%" height="50%">
+
+<h4 id="2-1-4、Java线程的实现"><a href="#2-1-4、Java线程的实现" class="headerlink" title="2.1.4、Java线程的实现"></a>2.1.4、Java线程的实现</h4><p>HotSpot中，它的每一个Java线程都直接映射到一个操作系统原生线程来实现，HotSpot自己不会干涉线程调度，全权交给操作系统处理。</p>
+<h3 id="2-2、-Java线程调度"><a href="#2-2、-Java线程调度" class="headerlink" title="2.2、 Java线程调度"></a>2.2、 Java线程调度</h3><p>线程调度是指系统为线程分配处理器使用权的过程，调度方式有两种：<strong>协同式线程调度</strong>和<strong>抢占式线程调度</strong>。</p>
+<p>协同式调度的多线程系统，线程的执行时间<strong>由线程本身控制</strong>，线程自己的工作执行完后，会主动通知系统切换到另外一个线程上。协同的好处就是实现简单，而且线程执行完后才会进行线程切换，切换操作对线程自己是可知的，所以没有什么线程同步的问题。坏处就是线程的执行时间不可控，且因为不告知系统切换线程，有可能会发生线程阻塞。</p>
+<p>抢占式调度的多线程系统，每个线程<strong>由系统分配执行时间</strong>，线程的切换不由线程本身决定。抢占式的好处就是线程的执行时间可控，不会发生线程阻塞</p>
+<h3 id="2-3、状态转换"><a href="#2-3、状态转换" class="headerlink" title="2.3、状态转换"></a>2.3、状态转换</h3><p>Java定义了6中线程状态，分别是：</p>
+<ul>
+<li><strong>新建<code>New</code></strong>：创建后尚未启动的线程</li>
+<li><strong>运行<code>Runnable</code></strong>：包括os线程状态中的<code>Running</code>和<code>Ready</code>，处于此状态的线程可能正在执行，也可能正在等待os为它分配执行时间</li>
+<li><strong>无限期等待<code>Waiting</code></strong>：该状态的线程不会被分配处理器执行时间，需要等待被其他线程显示唤醒。进入该状态的方式：<ul>
+<li><code>Object::wait()</code>方法，无Timeout参数</li>
+<li><code>Thread::join()</code>方法，无Timeout参数</li>
+<li><code>LockSupport::park()</code>方法</li>
+</ul>
+</li>
+<li><strong>期限等待<code>Timed Waiting</code></strong>：该状态的线程不会被分配处理器执行时间，在一定的时间后会由系统唤醒。该状态的进入方法：<ul>
+<li><code>Thread::sleep()</code>方法</li>
+<li><code>Object::wait()</code>方法，有Timeout参数</li>
+<li><code>Thread::join()</code>方法，有Timeout参数</li>
+<li><code>LockSupport::parkNanos()</code>方法</li>
+<li><code>LockSupport::parkUntil()</code>方法</li>
+</ul>
+</li>
+<li><strong>阻塞<code>Blocked</code></strong>：线程被阻塞，等待获取一个排它锁</li>
+<li><strong>结束<code>Terminated</code></strong>：线程被终止，线程结束执行</li>
+</ul>
+<p>以上6种状态的转换关系如下图：</p>
+<img src="https://raw.githubusercontent.com/Hipekit/Pic/master/img/20200423202532.png" width="80%" height="50%">
+
+<h2 id="3、Java与协程"><a href="#3、Java与协程" class="headerlink" title="3、Java与协程"></a>3、Java与协程</h2><p>1:1的内核线程模型是目前Java虚拟机线程实现的主流选择，但是这种方式线程切换、调度的成本高昂。内核线程的调度成本主要来自于用户态和核心态之间的状态转换。而这两种状态转换的开销主要来自于相应中断、保护和恢复执行现场的成本。</p>
+<p>协程其实就是用户线程的协同式调度，协程的主要优势是轻量，进行量化的话，在不显示设置<code>-Xss</code>或<code>-XX:ThreadStackSize</code>的情况下，64位HotSpot的线程栈容量默认是1MB，而一个协程的栈通常在几百个字节到几KB之间。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>作者:</span>
+                        <span>风胤</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>链接:</span>
+                        <span><a href="http://yoursite.com/2020/04/23/个人技术成长/Java内存模型与线程/">http://yoursite.com/2020/04/23/个人技术成长/Java内存模型与线程/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>标签:</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Java/"># Java</a>
+                    
+                        <a href="/tags/JVM/"># JVM</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">返回</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/23/个人技术成长/垃圾收集/">JVM-垃圾收集与内容分配策略</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/12/个人技术成长/程序编译和代码优化/">JVM-程序编译和代码优化</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© 风胤 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

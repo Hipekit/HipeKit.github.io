@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="风胤">
+
+
+
+
+    <meta name="keywords" content="博客">
+
+
+<title>JVM-字节码执行引擎 | 潮技</title>
+
+
+
+    <link rel="icon" href="/image/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">风胤的博客</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">风胤的博客</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">返回顶部</a>
+        <a onclick="go_bottom()">去底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">JVM-字节码执行引擎</h1>
+            
+                <div class="post-meta">
+                    
+                        作者: <a itemprop="author" rel="author" href="/">风胤</a>
+                    
+
+                    
+                        <span class="post-time">
+                        时间: <a href="#">四月 23, 2020&nbsp;&nbsp;20:53:06</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    分类:
+                            
+                                <a href="/categories/Java/">Java</a>
+                            
+                                <a href="/categories/Java/JVM/">JVM</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="1、运行时栈帧结构"><a href="#1、运行时栈帧结构" class="headerlink" title="1、运行时栈帧结构"></a>1、运行时栈帧结构</h2><p>Java虚拟机以方法作为最基本的执行单元，栈帧用于支持虚拟机进行方法调用和方法执行背后的数据结构。</p>
+<p>栈帧存储了方法的局部变量表、操作数栈、动态连接和方法返回地址等信息。</p>
+<p>对于执行引擎来说，只有位于栈顶的方法才是在执行的，称为“当前栈帧”，与其关联的方法称为“当前方法”。</p>
+<img src="https://raw.githubusercontent.com/Hipekit/Pic/master/img/20200423205210.png" alt="栈帧的结构" width="80%" height="50%">
+
+<h3 id="1-1、局部变量表"><a href="#1-1、局部变量表" class="headerlink" title="1.1、局部变量表"></a>1.1、局部变量表</h3><p>局部变量表存放方法参数和方法内部定义的变量。</p>
+<p>局部变量表的大小在编译期就确定了，被方法的Code属性的max_locals数据项指定。</p>
+<p>局部变量表以变量槽<code>Slot</code>为最小单位，一个Slot存放32位的数据类型，包括boolean、byte、char、short、int、float、reference和returnAddress类型的数据。对于64位的数据，会以高位对齐的方式分配两个连续的Slot。</p>
+<blockquote>
+<p>reference是对一个对象实例的引用，可以根据其直接或间接查找到对象在Java堆中数据存放的起始地址或索引，以及对象的数据类型在方法区中的类型信息。</p>
+</blockquote>
+<p>当实例方法被调用时，局部变量表的第0位索引的Slot默认是存放方法所属对象实例的引用，其余参数按参数列表顺序排列，占用从1开始的Slot。之后，在根据方法内部定义的局部变量顺序和作用域来分配其他Slot。</p>
+<h3 id="1-2、操作数栈"><a href="#1-2、操作数栈" class="headerlink" title="1.2、操作数栈"></a>1.2、操作数栈</h3><p>操作数栈是一个后入先出的栈，栈的最大深度在编译时被写到了Code属性的max_stacks数据项中。Javac编译器的数据流分析工作保证了在方法执行的任何时候，栈的深度都不会超过max_stacks的最大值。</p>
+<p>Java虚拟机的解释执行引擎被称为“基于栈的执行引擎”，里面的“栈”就是操作数栈。</p>
+<h3 id="1-3、动态连接"><a href="#1-3、动态连接" class="headerlink" title="1.3、动态连接"></a>1.3、动态连接</h3><p>每个栈帧都包含一个指向运行时常量池中该栈帧所方法的引用，通过这个引用是为了支持方法调用过程中的动态连接。</p>
+<p>在Class文件的常量池中存有大量的符号引用，字节码中的方法调用指令就是以常量池指向方法的符号引用作为参数。这些符号引用的解析分为两种：</p>
+<ul>
+<li>静态解析：在类加载阶段或者第一次使用的时候转为直接引用</li>
+<li>动态连接：在每次运行期间都转为直接引用</li>
+</ul>
+<h3 id="1-4、方法返回地址"><a href="#1-4、方法返回地址" class="headerlink" title="1.4、方法返回地址"></a>1.4、方法返回地址</h3><p>当一个方法执行后，只有两种方式可以退出这个方法：正常调用完成和异常调用完成</p>
+<ul>
+<li>正常调用完成：执行引擎遇到方法返回的字节码指令，这个时候可能会有返回值传递给上层的方法调用者，方法是否有返回值以及返回值的类型将根据遇到何种方法返回指令来决定。</li>
+<li>异常调用完成：在方法执行的过程中遇到了异常，然后这个异常没有在方法提内得到妥善处理（该方法的异常列表没有搜索到匹配的异常处理）。<br>当方法正常退出时，主调方法的PC计数器的值就可以作为方法返回地址，而异常退出时，返回地址需要通过异常处理器来确定。</li>
+</ul>
+<h2 id="2、方法调用"><a href="#2、方法调用" class="headerlink" title="2、方法调用"></a>2、方法调用</h2><p>方法调用是调用某一个方法，而不是执行该方法的代码。在Class文件的编译期间，一切方法的调用在Class文件中都是符号引用，而不是方法的直接引用。</p>
+<h3 id="2-1、解析"><a href="#2-1、解析" class="headerlink" title="2.1、解析"></a>2.1、解析</h3><p>解析会将Class文件中一部分符号引用转化为直接引用，但这种解析成立的前提是：调用的方法在编译器进行编译时就确定了下来。</p>
+<p>在解析阶段能确定唯一调用版本的有静态方法、私有方法、实例构造器、父类方法和被<code>final</code>修饰的方法5种，这5种方法在类加载的时候就会把符号引用解析为直接引用，这些方法被称为“非虚方法”。与之相反，其他方法称为“虚方法”。</p>
+<h3 id="2-2、分派"><a href="#2-2、分派" class="headerlink" title="2.2、分派"></a>2.2、分派</h3><p>分派是一种方法调用方式，按分派依据的宗量数可以分为单分派和多分派，两两组合就构成了静态单分派、静态多分派、动态单分派、动态多分派。</p>
+<h4 id="2-2-1、静态分派"><a href="#2-2-1、静态分派" class="headerlink" title="2.2.1、静态分派"></a>2.2.1、静态分派</h4><p>静态分派是指依赖静态类型来决定方法执行版本的分派动作，其最典型的应用表现就是方法重载，静态分派发生在编译期。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Human</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Man</span> <span class="keyword">extends</span> <span class="title">Human</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Woman</span> <span class="keyword">extends</span> <span class="title">Human</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sayHello</span><span class="params">(Human guy)</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"hello, guy"</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sayHello</span><span class="params">(Man man)</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"hello, man"</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sayHello</span><span class="params">(Woman woman)</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"hello, woman"</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        Human man = <span class="keyword">new</span> Man();</span><br><span class="line">        Human woman = <span class="keyword">new</span> Woman();</span><br><span class="line">        Test test = <span class="keyword">new</span> Test();</span><br><span class="line">        test.sayHello(man);</span><br><span class="line">        test.sayHello(woman);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hello,guy</span><br><span class="line">hello,guy</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码中有三个重载方法，参数各不相同，但是<code>Man</code>和<code>Woman</code>都是<code>Human</code>的子类 ，通过test调用sayHello方法输出都是以Human类型为参数的方法，这是因为man和woman声明的类型都是Human，这个声明类型在编译期是确定的，而这两个对象的实际类型是在运行期才确定的。编译器在编译程序时，并不知道对象的实际类型是什么，而是会把声明类型当作该对象的类型。</p>
+<h4 id="2-2-2、动态分派"><a href="#2-2-2、动态分派" class="headerlink" title="2.2.2、动态分派"></a>2.2.2、动态分派</h4><p>动态分派与重写很有关联，当子类重写了父类的一个方法时，通过子类实例化父类对象（对象的向上转型），当使用该对象调用同名方法时，调用的是子类重写的方法。之所以会有这样的效果，原因就在于调用方法的invokevirtual指令，这条指令的运行过程大致如下：</p>
+<ol>
+<li>找到操作数栈顶的第一个元素所指向对象的实际类型，记作A。</li>
+<li>如果在类型A中找到了与常量池中描述符与简单名称相符的方法，则进行权限校验，如果通过则返回这个方法的直接引用；不通过则返回java.lang.IllegalAccessError异常。</li>
+<li>否则，按照继承关系从下到上依次对A的父类进行第二步的搜索和校验。</li>
+<li>如果始终没有找到合适的方法，则抛出java.lang.AbstractMethodErroe异常。</li>
+</ol>
+<blockquote>
+<p>该指令只对方法有效，对于字段而言，哪个类访问的就是哪个类的字段。例如，A、B两个类，B继承A,两个类都有字段data，当<code>A a = new B();</code>时，通过<code>a.data</code>访问的就是A的字段。</p>
+</blockquote>
+<h3 id="2-2-3、单分派和多分派"><a href="#2-2-3、单分派和多分派" class="headerlink" title="2.2.3、单分派和多分派"></a>2.2.3、单分派和多分派</h3><p>方法的接收者和方法的参数统称宗量，根据分派基于多少宗量，可以分为单分派和多分派。</p>
+<ul>
+<li>单分派：根据一个宗量对目标方法进行选择</li>
+<li>多分派：根据多于一个宗量对目标方法进行选择</li>
+</ul>
+<p>在类的编译期（静态分派），选择目标方法的依据有两点：一是对象的静态类型，二是调用方法的参数，因此静态分派是多分派。<br>在运行期（动态分派），由于方法签名在编译期就已经确定，选择的依据就只有方法参数，因此动态分派是单分派。</p>
+<h3 id="2-2-4、虚拟机动态分派的实现"><a href="#2-2-4、虚拟机动态分派的实现" class="headerlink" title="2.2.4、虚拟机动态分派的实现"></a>2.2.4、虚拟机动态分派的实现</h3><p>一种基础而且常见的优化手段是为类型在方法区中建立一个虚方法表。</p>
+<p>虚方法表中存放着各个方法的实际入口地址，如果某个方法在子类中没有被重写，那子类的虚方法表中的地址入口和父类相同方法的地址入口是一致的，都指向父类的实现入口。如果子类实现了这个方法，子类虚方法表地址会被替换成指向实际实现方法的地址。</p>
+<p>虚方法表在类加载的连接阶段进行初始化，准备类变量初始值后，虚方法表也会被初始化。</p>
+<h2 id="3、动态类型语言支持"><a href="#3、动态类型语言支持" class="headerlink" title="3、动态类型语言支持"></a>3、动态类型语言支持</h2><h3 id="3-1、动态类型语言"><a href="#3-1、动态类型语言" class="headerlink" title="3.1、动态类型语言"></a>3.1、动态类型语言</h3><p>动态类型语言的特征是它的类型检查是在运行期，而不是在编译期。常用的包括：APL、Clojure、Erlang、Groovy、JavaScript、Lisp、Lua等等。</p>
+<h3 id="3-2、java-lang-invoke包和invokedynamic指令"><a href="#3-2、java-lang-invoke包和invokedynamic指令" class="headerlink" title="3.2、java.lang.invoke包和invokedynamic指令"></a>3.2、java.lang.invoke包和invokedynamic指令</h3><p>java.lang.invoke包提供了一种新的动态确定方法的机制，称为“方法句柄”。方法句柄是对Java中方法的一个强类型的可执行的引用。通过方法句柄可以直接调用该句柄所引用的底层方法。</p>
+<p>示例；</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MethodHandleTest</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ClassA</span></span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">println</span><span class="params">(String s)</span></span>&#123;</span><br><span class="line">            System.out.println(s);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Throwable</span>&#123;</span><br><span class="line">        Object obj = System.currentTimeMillis() % <span class="number">2</span> == <span class="number">0</span> ? System.out : <span class="keyword">new</span> ClassA();</span><br><span class="line">        <span class="comment">//获取方法句柄，调用println方法</span></span><br><span class="line">        getPrintMH(obj).invokeExact(<span class="string">"icyfenix"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> MethodHandle <span class="title">getPrintMH</span><span class="params">(Object reveiver)</span> <span class="keyword">throws</span> Throwable</span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//MethodType：代表“方法类型”，包含了方法返回值和具体参数</span></span><br><span class="line">        MethodType mt = MehtodType.methodType(<span class="keyword">void</span>.class, String.class);</span><br><span class="line">        <span class="comment">//lookup()方法来自于MethodHandles.lookup，这句的作用是在指定的类中查找指定名称的方法句柄</span></span><br><span class="line">        <span class="keyword">return</span> lookup().findVirtual(reveiver.getClass(), <span class="string">"println"</span>, mt).bindTo(reveiver);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从某种意义上说，invokedynamic指令与MethodHandle机制的作用是一样的，都是为了解决原有4条“invoke*”指令方法分派规则完全固化在虚拟机之中的问题，把如何查询目标方法的决定权从虚拟机转嫁到具体用户代码之中，让用户有更高的自由。</p>
+<p>每一处含有invokedynamic指令的位置都被称为“动态调用点”，这条指令的第一个参数是CONSTANT_invokeDynamic_info常量，可以从该常量中获取引导方法、方法类型和名称。引导方法是固定的参数，并且返回值规定是java.lang.invoke。CallSite对象，这个对象代表类真正要执行的目标方法调用。</p>
+<p>invokedynamic指令的主要服务对象并非Java语言，而是其他Java虚拟机之上的其他动态类型语言。</p>
+<h2 id="4、基于栈的字节码解释执行引擎"><a href="#4、基于栈的字节码解释执行引擎" class="headerlink" title="4、基于栈的字节码解释执行引擎"></a>4、基于栈的字节码解释执行引擎</h2><p>Java虚拟机的执行引擎在执行Java代码时有解释执行（通过解释器）和编译执行（通过即时编译器产生本地代码执行）两种选择。</p>
+<h3 id="4-1、基于栈和寄存器的指令集"><a href="#4-1、基于栈和寄存器的指令集" class="headerlink" title="4.1、基于栈和寄存器的指令集"></a>4.1、基于栈和寄存器的指令集</h3><p>Java编译器输出的指令流，基本是一种基于栈的指令集，指令流中的指令大部分都是零地址指令，它们依赖操作数栈进行工作。<br>基于寄存器的指令集，依赖于寄存器进行工作，主流PC机支持的就是这种指令集架构。</p>
+<p>示例：计算“1+1”</p>
+<p>基于栈的指令集：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">iconst_1    //1入栈</span><br><span class="line">iconst_1    //1入栈</span><br><span class="line">iadd        //将栈顶的两个值出栈、相加，结果放入栈顶</span><br><span class="line">istore_0    //将栈顶的值放到局部变量表的第0个Slot中</span><br></pre></td></tr></table></figure>
+
+<p>基于寄存器的指令集：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mov eax, 1  //将EAX寄存器的值设为1</span><br><span class="line">add eax, 1  //将EAX寄存器的值加1</span><br></pre></td></tr></table></figure>
+
+<p>基于栈的指令集和基于寄存器的指令集比较<br>优点：</p>
+<ul>
+<li>可移植</li>
+<li>代码相对紧凑，每个字节就对应一条指令</li>
+<li>编译器实现更加简单，不需要考虑空间分配的问题<br>缺点：</li>
+<li>执行速度相对于寄存器稍慢</li>
+<li>指令的数量比寄存器的架构多</li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>作者:</span>
+                        <span>风胤</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>链接:</span>
+                        <span><a href="http://yoursite.com/2020/04/23/个人技术成长/虚拟机字节码执行引擎/">http://yoursite.com/2020/04/23/个人技术成长/虚拟机字节码执行引擎/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>标签:</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Java/"># Java</a>
+                    
+                        <a href="/tags/JVM/"># JVM</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">返回</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2020/04/23/个人技术成长/类加载/">JVM-类加载</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© 风胤 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

@@ -202,7 +202,7 @@
 
         <div class="post-content">
             <h1 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h1><h2 id="运行时数据区域"><a href="#运行时数据区域" class="headerlink" title="运行时数据区域"></a>运行时数据区域</h2><p>Java虚拟机在执行Java程序的过程中会把它管理的内存划分为几个不同的数据区域。有些是随着虚拟机的进程一直存在，有些是随着线程的启动、结束而创建、销毁。</p>
-<img src="https://raw.githubusercontent.com/Hipekit/Pic/master/img/20200421114402.png" alt="运行时数据区域" width="50%" height="50%">
+<img src="https://raw.githubusercontent.com/Hipekit/Pic/master/img/20200421114402.png" alt="运行时数据区域" width="80%" height="50%">
 
 <h3 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h3><p>程序计数器是一块较小的空间，它可以看作是当前线程所执行的字节码的行号指示器。Java虚拟机是多线程执行的，每个处理器同一时刻只会处理一条线程，为了线程切换后能恢复到正确的位置，每个线程都需要一个独立的计数器，各个线程之间的计数器互不影响，独立存储，这种类型的区域就是“线程私有”的。</p>
 <h3 id="虚拟机栈"><a href="#虚拟机栈" class="headerlink" title="虚拟机栈"></a>虚拟机栈</h3><p>虚拟机栈也是线程私有的，它的生命周期和线程相同。每个方法在执行的时候都会创建一个栈桢<code>Stack Frame</code>，用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法被调用直到执行完毕的过程就是该方法所对应的栈桢出栈和入栈的过程。</p>
@@ -287,10 +287,10 @@
 <h4 id="对齐填充"><a href="#对齐填充" class="headerlink" title="对齐填充"></a>对齐填充</h4><p>对齐填充可以不存在，仅仅是占位符的作用。对于HotSpot而言，由于对象的大小必须是8的整数倍，如果该对象不足8的整数倍，需要通过对象填充补全。</p>
 <h3 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h3><ul>
 <li><p>句柄</p>
-<img src="https://raw.githubusercontent.com/Hipekit/Pic/master/img/20200421114415.png" alt="通过句柄访问对象" width="50%" height="50%">
+<img src="https://raw.githubusercontent.com/Hipekit/Pic/master/img/20200421114415.png" alt="通过句柄访问对象" width="80%" height="50%">
 </li>
 <li><p>直接指针</p>
-<img src="https://raw.githubusercontent.com/Hipekit/Pic/master/img/20200421114426.png" alt="通过直接指针访问对象" width="50%" height="50%"></li>
+<img src="https://raw.githubusercontent.com/Hipekit/Pic/master/img/20200421114426.png" alt="通过直接指针访问对象" width="80%" height="50%"></li>
 </ul>
 
         </div>
@@ -345,7 +345,7 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2020/04/12/个人技术成长/程序编译和代码优化/">程序编译和代码优化</a>
+                <a class="prev" rel="prev" href="/2020/04/12/个人技术成长/程序编译和代码优化/">JVM-程序编译和代码优化</a>
             
             
         </section>
